@@ -18,7 +18,7 @@ void vfs_init(void) {
 
 
 vfs_node* vfs_create_node(char *filename, bool copy_name, uint32_t attributes, uint32_t capabilities, \
-							uint32_t file_length, vfs_node * tag, vfs_node * parent, struct fat_mount_data m_data, \
+							uint32_t file_length, vfs_node * tag, vfs_node * parent,  \
 							struct inode_ops* fileops)
 {
 	vfs_node * new_node = kmalloc(sizeof(vfs_node));
@@ -40,7 +40,7 @@ vfs_node* vfs_create_node(char *filename, bool copy_name, uint32_t attributes, u
 		log(LOG_FAIL, "FILE_OP NOT EXIST");
 		while (1);
 	}
-	if (fat_mount_data != NULL)
+	if (m_data != NULL)
 		new_node->mount_data = m_data;
 	new_node->name = filename;
 	new_node->attributes = attributes;

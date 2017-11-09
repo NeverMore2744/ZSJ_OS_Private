@@ -89,11 +89,18 @@ struct vfs_node {
     struct vfs_node* parent; // parent node
 
     uint32_t flags;     // file flags
-    struct fat_mount_data * mount_data; // mount data
-//    struct fs *in_fs;
+    
+    //    struct fs *in_fs;
     const struct inode_ops *in_ops;
     list_head * children;
+    union{
+        struct fat_mount_data mount_data; // mount data infomation
+        struct fat_node_data node_data;   // node data for fat32   
+    }   metadata;
 };
+
+
+
 
 struct inode_ops {
     //unsigned long vop_magic;

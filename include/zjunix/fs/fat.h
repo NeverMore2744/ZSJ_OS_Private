@@ -11,6 +11,7 @@
 #define SECTOR_SIZE 512
 #define CLUSTER_SIZE 4096
 
+#define FAT_EOF 0x0FFFFFF8
 
 // /* filesystem for fat32 */
 // /*
@@ -27,6 +28,16 @@ struct fat_mount_data
 {
     struct fs_info fat_info;
     uint32_t partition_offset;
+    uint32_t fat_lba;
+    uint32_t cluster_lba;
+    uint32_t root_dir_first_cluster;
+};
+
+struct fat_node_data
+{
+    bool layout_loaded;
+    uint32_t metadata_cluster;
+    uint32_t metadata_index;
 };
               
 struct fs_info {

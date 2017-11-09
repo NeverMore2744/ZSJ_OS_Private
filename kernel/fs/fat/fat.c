@@ -10,7 +10,7 @@
 #include "debug.h"
 #endif  // ! FS_DEBUG
 
-struct fat_mount_data fat_mount_store;
+//struct fat_mount_data fat_mount_store;
 
 /* fat buffer clock head */
 u32 fat_clock_head = 0;
@@ -883,19 +883,40 @@ vfs_node * fat_fs_mount(char * mount_name, vfs_node* dev_node)
     struct fat32_fs *fat32 = fsop_info(fs, fat32);
     fat32->dev = dev;
 
-    u32 succ = init_fat_info(fat_mount_store.fat_info);
-
     vfs_node* mount_point = vfs_create_node(mount_name, true, NODE_MOUNT, VFS_READ | VFS_WRITE, \
-                                            0, dev_node, NULL, &fat_mount_store, NULL);
+                                            0, dev_node, NULL, NULL);
+
+    // 获取了挂载点的mount data
+    // 
+    fat_mount_data* mount_data = &mount_point.metadata.mount_data;
+
+    // 将mount data 中的 fat info 读取出来
+    // 
+    u32 succ = init_fat_info(mount_data.metadata.mount_data.fat_info);
     if (0 != succ)
         goto fs_init_err;
+
+    /* Base addr DBR表所在位置 */
+    mount_data -> partition_offset = mount_data.metadata.mount_data.fat_info.base_addr;
+    /* fat lba所在目录 */
+    mount_data -> fat_lba = mount_data.metadata.mount_data.fat_info.BPB.attr.reserved_sectors \
+                                + mount_data -> partition_offset;
+    mount_data -> cluster_lba = mount_data -> fat_lba + \
+            mount_data.metadata.mount_data.fat_info.BPB.attr.number_of_copies_of_fat * \
+            mount_data.metadata.mount_data.fat_info.BPB.attr.num_of_sectors_per_fat;
+
+    /* 根目录的第一个蔟 */
+    mount_data -> root_dir_first_cluster = mount_data.metadata.mount_data.fat_info.BPB.attr.cluster_number_of_root_dir;
+
+    uint32_t root_dir_first_cluster = mount_data -> root_dir_first_cluster;
+
 
     init_fat_buf();
     init_dir_buf();
 
-    mount_point->children = fat_fs_read_directory(mount_point, cluster_number_of_root_dir, );
+    mount_point->children = fat_fs_read_directory(mount_point, root_dir_first_cluster, mount_point);
 
-    return 0;
+    return mount_point;
 fs_init_err:
     log(LOG_FAIL, "File system init fail.");
     return 1;
@@ -903,44 +924,15 @@ fs_init_err:
 }
 
 
-
-// 挂载fat32系统到disk0( sd card )上
-// 
-// 
-int fat_mount(const char *devname) {
-    return vfs_mount(devname, fat_do_mount);
-}
-
-static int fat_do_mount(struct device *dev, struct fs **fs_store) {
-    /* allocate fs structure */
-    struct fs *fs;
-    if ((fs = alloc_fs(fat32)) == NULL) {
-        return -1;
-    }
-
-    struct fat32_fs *fat32 = fsop_info(fs, fat32);
-    fat32->dev = dev;
-
-    u32 succ = init_fat_info(struct fs_info __fsop_info(fat32, fat32));
-    if (0 != succ)
-        goto fs_init_err;
-
-    init_fat_buf();
-    init_dir_buf();
-
-    *fs_store = fs;
-
-    return 0;
-fs_init_err:
-    log(LOG_FAIL, "File system init fail.");
-    return 1;
-}
-
-void
-fat_init(void) {
-    int ret;
-    if ((ret = fat_mount("disk0")) != 0) {
-        log(LOG_FAIL, "failed: sfs_mount");
+list_head* fat_fs_read_directory(vfs_node* mount_point, uint32_t current_cluster, vfs_node* parent)
+{
+    list_head l;
+    INIT_LIST_HEAD(&l);
+    // 从根目录所开始的第一个蔟开始，
+    uint32_t offset = current_cluster;
+    while (offset < FAT_EOF)
+    {
+        
     }
 }
 
