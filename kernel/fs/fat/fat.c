@@ -14,10 +14,10 @@
 
 /* fat buffer clock head */
 u32 fat_clock_head = 0;
-// BUF_512 fat_buf[FAT_BUF_NUM];   // 512 byte 的缓冲区 -> 移到dev.c
-// 
 
-extern BUF_512 fat_buf[FAT_BUF_NUM];
+BUF_512 fat_buf[FAT_BUF_NUM];
+
+BUF_4K cluster_buf;
 
 u8 filename11[13];
 u8 new_alloc_empty[PAGE_SIZE];
@@ -25,6 +25,17 @@ u8 new_alloc_empty[PAGE_SIZE];
 #define DIR_DATA_BUF_NUM 4
 BUF_512 dir_data_buf[DIR_DATA_BUF_NUM];
 u32 dir_data_clock_head = 0;
+
+static struct inode_ops fat_ops = 
+{
+    fat_fs_open,
+    NULL, 
+    fat_fs_read,
+    fat_fs_write,   
+    fat_fs_sync,
+    NULL,
+    NULL
+};
 
 //struct fs_info fat_info;
 
@@ -117,6 +128,7 @@ void init_fat_buf() {
         fat_buf[i].state = 0;
     }
 }
+
 /* DIR_DATA_BUF_NUM = 4 each 512 bytes */
 void init_dir_buf() {
     int i = 0;
@@ -425,89 +437,42 @@ fs_close_err:
     return 1;
 }
 
-/* Read from file */
-u32 fs_read(FILE *file, u8 *buf, u32 count) {
-    u32 start_clus, start_byte;
-    u32 end_clus, end_byte;
-    u32 filesize = file->entry.attr.size;
-    u32 clus = get_start_cluster(file);
-    u32 next_clus;
-    u32 i;
-    u32 cc;
+u32 fat_fs_read(vfs_node* file, uint32_t start, uint32_t count, void * iobuf)
+{
+    uint32_t i;
+    uint32_t pages;
+    uint32_t rem;
+    uint32_t next_clus;
+
+    if (start == 0 || count == 0)
+        return 0; // the file is empty
+    vfs_node * mount_point = file -> tag;
+
+    pages = count >> 12;
+    if ((count & 4095) > 0 ) pages = pages + 1;     // ceil division
+
+    for (i = 0; i < pages; i ++ )
+    {
+        if (fat_fs_read_page(mount_point, start, iobuf + (i << 12)) == false)
+        {
+            log(LOG_FAIL, "read_page error");
+            while (1);
+        }
+        get_fat_entry_value(start, &next_clus);
+        start = next_clus;
+    }
+    return count;
+}
+
+bool fat_fs_read_page(vfs_node * mount_point, uint32_t clus_start, void * buf)
+{
     u32 index;
-
-#ifdef FS_DEBUG
-    kernel_printf("fs_read: count %d\n", count);
-    disable_interrupts();
-#endif  // ! FS_DEBUG
-    /* If file is empty */
-    if (clus == 0)
-        return 0;
-
-    /* If loc + count > filesize, only up to EOF will be read */
-    if (file->loc + count > filesize)
-        count = filesize - file->loc;
-
-    /* If read 0 byte */
-    if (count == 0)
-        return 0;
-
-    start_clus = file->loc >> fs_wa(fat_info.BPB.attr.sectors_per_cluster << 9);
-    start_byte = file->loc & ((fat_info.BPB.attr.sectors_per_cluster << 9) - 1);
-    end_clus = (file->loc + count - 1) >> fs_wa(fat_info.BPB.attr.sectors_per_cluster << 9);
-    end_byte = (file->loc + count - 1) & ((fat_info.BPB.attr.sectors_per_cluster << 9) - 1);
-
-#ifdef FS_DEBUG
-    kernel_printf("start cluster: %d\n", start_clus);
-    kernel_printf("start byte: %d\n", start_byte);
-    kernel_printf("end cluster: %d\n", end_clus);
-    kernel_printf("end byte: %d\n", end_byte);
-#endif  // ! FS_DEBUG
-    /* Open first cluster to read */
-    for (i = 0; i < start_clus; i++) {
-        if (get_fat_entry_value(clus, &next_clus) == 1)
-            goto fs_read_err;
-
-        clus = next_clus;
-    }
-
-    cc = 0;
-    while (start_clus <= end_clus) {
-        index = fs_read_4k(file->data_buf, fs_dataclus2sec(clus), &(file->clock_head), LOCAL_DATA_BUF_NUM);
-        if (index == 0xffffffff)
-            goto fs_read_err;
-
-        /* If in same cluster, just read */
-        if (start_clus == end_clus) {
-            for (i = start_byte; i <= end_byte; i++)
-                buf[cc++] = file->data_buf[index].buf[i];
-            goto fs_read_end;
-        }
-        /* otherwise, read clusters one by one */
-        else {
-            for (i = start_byte; i < (fat_info.BPB.attr.sectors_per_cluster << 9); i++)
-                buf[cc++] = file->data_buf[index].buf[i];
-
-            start_clus++;
-            start_byte = 0;
-
-            if (get_fat_entry_value(clus, &next_clus) == 1)
-                goto fs_read_err;
-
-            clus = next_clus;
-        }
-    }
-fs_read_end:
-
-#ifdef FS_DEBUG
-    kernel_printf("fs_read: count %d\n", count);
-    enable_interrupts();
-#endif  // ! FS_DEBUG
-    /* modify file pointer */
-    file->loc += count;
-    return cc;
-fs_read_err:
-    return 0xFFFFFFFF;
+    u32_i;
+    index = fs_read_4k(PAGE_BUFFER.page, fs_dataclus2sec(clus, mount_point->metadata.fat_node_data), \
+        PAGE_BUFFER.clock_head, 10, mount_point->metadata.mount_data.fat_info);
+    for (i = start_byte; i < (mount_point->metadata.mount_data.fat_info.BPB.attr.sectors_per_cluster << 9); i++)
+             buf[cc++] = file->data_buf[index].buf[i];
+    return true;
 }
 
 /* Find a free data cluster */
@@ -874,33 +839,27 @@ void get_filename(u8 *entry, u8 *buf) {
 
 vfs_node * fat_fs_mount(char * mount_name, vfs_node* dev_node)
 {
-    /* allocate fs structure */
-
-    if ((fs = alloc_fs(fat32)) == NULL) {
-        return -1;
-    }
-
-    struct fat32_fs *fat32 = fsop_info(fs, fat32);
-    fat32->dev = dev;
-
+    /* 创建一个挂载点的vfs_node */
     vfs_node* mount_point = vfs_create_node(mount_name, true, NODE_MOUNT, VFS_READ | VFS_WRITE, \
-                                            0, dev_node, NULL, NULL);
+                                            0, dev_node, NULL, &fat_ops);
 
     // 获取了挂载点的mount data
     // 
     fat_mount_data* mount_data = &mount_point.metadata.mount_data;
 
-    // 将mount data 中的 fat info 读取出来
-    // 
+    // 将mount data 中的 fat info 读取出来 将sd卡上的信息->fat_info这个struct 结构中
+    //  
     u32 succ = init_fat_info(mount_data.metadata.mount_data.fat_info);
     if (0 != succ)
         goto fs_init_err;
 
     /* Base addr DBR表所在位置 */
     mount_data -> partition_offset = mount_data.metadata.mount_data.fat_info.base_addr;
+
     /* fat lba所在目录 */
     mount_data -> fat_lba = mount_data.metadata.mount_data.fat_info.BPB.attr.reserved_sectors \
                                 + mount_data -> partition_offset;
+
     mount_data -> cluster_lba = mount_data -> fat_lba + \
             mount_data.metadata.mount_data.fat_info.BPB.attr.number_of_copies_of_fat * \
             mount_data.metadata.mount_data.fat_info.BPB.attr.num_of_sectors_per_fat;
@@ -917,22 +876,151 @@ vfs_node * fat_fs_mount(char * mount_name, vfs_node* dev_node)
     mount_point->children = fat_fs_read_directory(mount_point, root_dir_first_cluster, mount_point);
 
     return mount_point;
+
 fs_init_err:
     log(LOG_FAIL, "File system init fail.");
     return 1;
 
 }
 
-
+// recursively read directories and files. 
+// if directory, then recursively read these things
 list_head* fat_fs_read_directory(vfs_node* mount_point, uint32_t current_cluster, vfs_node* parent)
 {
     list_head l;
     INIT_LIST_HEAD(&l);
+    BUF_4K m_buffer;
+    u8 i;
+    u8 j;
     // 从根目录所开始的第一个蔟开始，
     uint32_t offset = current_cluster;
     while (offset < FAT_EOF)
     {
-        
+        fs_clear_clus(m_buffer, &(mount_point->metadata.fat_info), 1)
+        if (fat_fs_read_by_data_cluster(mount_point, offset, &m_buffer) == false)
+        {
+            log(LOG_FAIL, "Read data cluster error");
+            while (1);
+        }
+        struct dir_entry_attr * entry = (dir_entry_attr *) m_buffer.buf;
+        for (i = 0; i < 128; i ++)
+        {
+            if (entry[i].name[0] == 0)  // the end
+                break;
+            if (entry[i].name[0] == 0xe5)
+                continue;
+            if ((entry[i].attr & FAT_VOLUME_ID) == FAT_VOLUME_ID)
+                continue;
+
+            char filename[13] = {0};
+            fat_fs_get_short_name(entry + i, filename);
+
+            list_head *children;
+            INIT_LIST_HEAD(&children);
+
+            uint32_t attribute = fat_to_vfs_attr(entry[i].attr);
+
+            vfs_node *node = vfs_create_node(filename, true, attribute, 0, entry[i].size,\
+                                NULL, mount_point, parent, NULL);
+
+            node->metadata.fat_node_data.metadata_cluster = offset;
+            node->metadata.fat_node_data.metadata_index = i;
+            node->metadata.fat_node_data.layout_loaded = false;
+            for (j = 0; j < 32; j ++)
+            {
+                node->metadata.fat_node_data.entry.data[j] = entry[i].data[j];
+            }
+
+            if (filename[0] != '.' && ((entry[i].attr & FAT_DIRECTORY) == FAT_DIRECTORY))
+            {
+                uint32_t clus = fat_fs_get_entry_data_cluster(entry + i);
+                children = fat_fs_read_directory(mount_point, clus, node);
+            }
+
+            node -> children = children;
+            list_add(&l, node);
+        }
+
+        uint32_t tmpoffset = offset;
+        get_fat_entry_value(tmpoffset, &offset);
+        /* fat_fs_find_next_cluster*/
     }
 }
+
+
+bool fat_fs_read_by_data_cluster(vfs_node * mount_point, uint32_t offset, BUF_4K * ptr_buffer)
+{
+    uint32_t index;
+    // offset 第几个蔟 （根目录开始）
+    uint32_t dummy = 0;
+    index = fs_read_4k(ptr_buffer, fs_dataclus2sec(offset, mount_point->metadata.fat_node_data), &(dummy), 1);
+
+}
+
+/* since the fat32 supports 8.3 */
+void fat_fs_get_short_name(dir_entry_attr* entry, char buffer[13])
+{
+    buffer[12] = 0;
+    u8 name_index = 0;
+    u8 i;
+    for (i = 0; i < 8; ++ i)
+        if (entry->name[i] != ' ')
+            buffer[name_index++] = entry->name[i];
+    buffer[name_index++] = '.';
+    u8 prev_index = name_index;
+    for (i = 0; i < 3; ++ i)
+        if (entry->ext[i] != ' ')
+            buffer[name_index ++] = entry->ext[i];
+    if (name_index == prev_index) buffer[--name_index] = 0; // this may be a directory
+}
+
+/* generate the file name to the 8.3 format of fat */
+void fat_fs_gen_short_name(vfs_node * node, char name[12])
+{
+    if (node -> name_length > 12)
+        return;
+    u8 j;
+    u8 i;
+    u8 dot = 0;
+    for (j = 0; j < 11; j ++)
+        name[j] = ' ';
+    for (i = 0; i < node->name_length; i ++)
+    {
+        if (node -> name[i] == '.')
+        {
+            dot = i;
+            while (i < 8)
+                name[i++] = ' ';
+            break;
+        }
+        name[i] = node -> name[i];
+    }
+
+    if (dot == 0)
+        return;
+    for (j = 0; j < 3 && dot + j + 1 < node->name_length; j++, i++)
+        name[i] = node->name[dot + j + 1];
+}
+
+uint32_t fat_to_vfs_attr(uint32_t fat_attr)
+{
+    uint32_t attr = NODE_READ;
+
+    if ((fat_attr & FAT_READONLY) != FAT_READONLY)
+        attr |= NODE_WRITE;
+    if ((fat_attr & FAT_HIDDEN) == FAT_HIDDEN)
+        attr |= NODE_HIDDEN;
+    if ((fat_attr & FAT_DIRECTORY) == FAT_DIRECTORY)
+        attr |= NODE_DIRECTORY;
+    else
+        attr |= NODE_FILE;
+    return attr;
+}
+
+uint32_t fat_fs_get_entry_data_cluster(dir_entry_attr* e)
+{
+    return e->startlow + ((uint32_t)e->starthi & 0x0FFFFFFF);
+}
+
+
 

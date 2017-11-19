@@ -10,6 +10,7 @@
 #define NODE_PIPE                               0x00000006
 #define NODE_READ                               0x00000008
 #define NODE_WRITE                              0x00000016
+#define NODE_HIDDEN                             0x00000032
 
 /* VFS CAPABILITIES */
 #define VFS_NONE                                0x00000001
@@ -93,7 +94,7 @@ struct vfs_node {
     //    struct fs *in_fs;
     const struct inode_ops *in_ops;
     list_head * children;
-    union{
+    union mdata {
         struct fat_mount_data mount_data; // mount data infomation
         struct fat_node_data node_data;   // node data for fat32   
     }   metadata;
@@ -106,9 +107,24 @@ struct inode_ops {
     //unsigned long vop_magic;
     unsigned long (*vop_open)(struct vfs_node *node, uint32_t open_flags);
     unsigned long (*vop_close)(struct vfs_node *node);
-    unsigned long (*vop_read)(struct vfs_node *node, void *iob);
-    unsigned long (*vop_write)(struct vfs_node *node, void *iob);
-    unsigned long (*vop_sync)(struct vfs_node *node);                 
+    unsigned long (*vop_read)(struct vfs_node *node, uint32_t start, uint32_t count, void *iob);
+    unsigned long (*vop_write)(struct vfs_node *node, uint32_t start, uint32_t count, void *iob);
+    unsigned long (*vop_sync)(struct vfs_node *node);
+    unsigned long (*vop_lookup)(struct vfs_node *node, char * path, struct vfs_node ** result) ;                  
     unsigned long (*vop_flush)();
 };
+
+inline uint32_t vfs_read_file(uint32 fd, vfs_node* node, uint32 start, size_t count, void *iob) 
+    { 
+            return node->in_ops->vop_read(node, start, count, iob); 
+    }
+
+inline uint32_t vfs_write_file(uint32 fd, vfs_node* node, uint32 start, size_t count, void *iob) 
+    { 
+            return node->in_ops->vop_write(node, start, count, iob); 
+    }
+
+
+
+
 

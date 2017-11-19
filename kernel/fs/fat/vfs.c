@@ -18,7 +18,7 @@ void vfs_init(void) {
 
 
 vfs_node* vfs_create_node(char *filename, bool copy_name, uint32_t attributes, uint32_t capabilities, \
-							uint32_t file_length, vfs_node * tag, vfs_node * parent,  \
+							uint32_t file_length, void * md, vfs_node * tag, vfs_node * parent,  \
 							struct inode_ops* fileops)
 {
 	vfs_node * new_node = kmalloc(sizeof(vfs_node));

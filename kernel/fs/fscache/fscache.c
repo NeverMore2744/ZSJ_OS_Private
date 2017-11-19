@@ -1,7 +1,10 @@
 #include "fscache.h"
 #include <zjunix/fs/fat.h>
 
-extern struct fs_info fat_info;
+//extern struct fs_info fat_info;
+
+PAGE PAGE_BUFFER[10];   // 全局pages缓存
+
 
 u32 fs_victim_4k(BUF_4K *buf, u32 *clock_head, u32 size) {
     u32 i;
@@ -48,10 +51,23 @@ fs_victim_4k_ok:
     return index;
 }
 
+u32 fs_clear_clus(BUF_4K *buf, struct fs_info* fat_info, u32 count) {
+    u32 i;
+    u32 index;
+    for (index = 0; index < count; index++)
+    {
+        for (i = 0; i < (fat_info->BPB.attr.sectors_per_cluster << 9); i++)
+            buf[index].buf[i] = 0;
+            buf[index].cur = 0;
+            buf[index].state = 0;
+    }
+    return 0;
+}
+
 /* Write current 4k buffer */
-u32 fs_write_4k(BUF_4K *f) {
+u32 fs_write_4k(BUF_4K *f, struct fs_info* fat_info) {
     if ((f->cur != 0xffffffff) && (((f->state) & 0x02) != 0)) {
-        if (write_block(f->buf, f->cur, fat_info.BPB.attr.sectors_per_cluster) == 1)
+        if (write_block(f->buf, f->cur, fat_info->BPB.attr.sectors_per_cluster) == 1)
             goto fs_write_4k_err;
 
         f->state &= 0x01;
@@ -64,9 +80,9 @@ fs_write_4k_err:
 }
 
 /* Read 4k cluster */
-u32 fs_read_4k(BUF_4K *f, u32 FirstSectorOfCluster, u32 *clock_head, u32 size) {
+u32 fs_read_4k(BUF_4K *f, u32 FirstSectorOfCluster, u32 *clock_head, u32 size, struct fs_info* fat_info) {
     u32 index;
-    u32 FirstSecWithOfs = FirstSectorOfCluster + fat_info.base_addr;
+    u32 FirstSecWithOfs = FirstSectorOfCluster + fat_info->base_addr;
     /* try to find in buffer */
     for (index = 0; (index < size) && (f[index].cur != FirstSecWithOfs); index++) {
     }
@@ -78,7 +94,7 @@ u32 fs_read_4k(BUF_4K *f, u32 FirstSectorOfCluster, u32 *clock_head, u32 size) {
         if (fs_write_4k(f + index) == 1)
             goto fs_read_4k_err;
 
-        if (read_block(f[index].buf, FirstSecWithOfs, fat_info.BPB.attr.sectors_per_cluster) == 1)
+        if (read_block(f[index].buf, FirstSecWithOfs, fat_info->BPB.attr.sectors_per_cluster) == 1)
             goto fs_read_4k_err;
 
         f[index].cur = FirstSecWithOfs;
@@ -92,7 +108,7 @@ fs_read_4k_err:
 }
 
 /* clear a buffer block, used to avoid reading a new erased block from sd */
-u32 fs_clr_4k(BUF_4K *buf, u32 *clock_head, u32 size, u32 cur) {
+u32 fs_clr_4k(BUF_4K *buf, u32 *clock_head, u32 size, u32 cur, struct fs_info* fat_info) {
     u32 index;
     u32 i;
 
@@ -101,7 +117,7 @@ u32 fs_clr_4k(BUF_4K *buf, u32 *clock_head, u32 size, u32 cur) {
     if (fs_write_4k(buf + index) == 1)
         goto fs_clr_4k_err;
 
-    for (i = 0; i < (fat_info.BPB.attr.sectors_per_cluster << 9); i++)
+    for (i = 0; i < (fat_info->BPB.attr.sectors_per_cluster << 9); i++)
         buf[index].buf[i] = 0;
 
     buf[index].cur = cur;
@@ -175,9 +191,9 @@ fs_write_512_err:
 }
 
 /* Read 512 sector */
-u32 fs_read_512(BUF_512 *f, u32 FirstSectorOfCluster, u32 *clock_head, u32 size) {
+u32 fs_read_512(BUF_512 *f, u32 FirstSectorOfCluster, u32 *clock_head, u32 size, struct fs_info* fat_info) {
     u32 index;
-    u32 FirstSecWithOfs = FirstSectorOfCluster + fat_info.base_addr;
+    u32 FirstSecWithOfs = FirstSectorOfCluster + fat_info->base_addr;
     /* try to find in buffer */
     for (index = 0; (index < size) && (f[index].cur != FirstSecWithOfs); index++) {
     }

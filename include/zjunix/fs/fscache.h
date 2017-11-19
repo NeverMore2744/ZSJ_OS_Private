@@ -3,6 +3,12 @@
 
 #include <zjunix/type.h>
 
+typedef struct PAGES {
+	BUF_4K page[10];
+	u32 clock_head;
+} PAGE;
+
+
 /* 4k byte buffer */
 typedef struct buf_4k {
     unsigned char buf[4096];

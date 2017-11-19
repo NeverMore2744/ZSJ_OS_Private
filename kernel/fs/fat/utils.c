@@ -106,10 +106,10 @@ void cluster_to_fat_entry(u32 clus, u32 *ThisFATSecNum, u32 *ThisFATEntOffset) {
 }
 
 /* data cluster num <==> sector num */
-u32 fs_dataclus2sec(u32 clus) {
-    return ((clus - 2) << fs_wa(fat_info.BPB.attr.sectors_per_cluster)) + fat_info.first_data_sector;
+u32 fs_dataclus2sec(u32 clus, struct fs_info* fat_info) {
+    return ((clus - 2) << fs_wa(fat_info->BPB.attr.sectors_per_cluster)) + fat_info->first_data_sector;
 }
 
-u32 fs_sec2dataclus(u32 sec) {
-    return ((sec - fat_info.first_data_sector) >> fs_wa(fat_info.BPB.attr.sectors_per_cluster)) + 2;
+u32 fs_sec2dataclus(u32 sec, struct fs_info* fat_info) {
+    return ((sec - fat_info->first_data_sector) >> fs_wa(fat_info->BPB.attr.sectors_per_cluster)) + 2;
 }

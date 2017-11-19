@@ -13,6 +13,14 @@
 
 #define FAT_EOF 0x0FFFFFF8
 
+#define FAT_READONLY                = 0x00000001;
+#define FAT_HIDDEN                  = 0x00000002;
+#define FAT_SYSTEM                  = 0x00000004;
+#define FAT_VOLUME_ID               = 0x00000008;
+#define FAT_DIRECTORY               = 0x00000016;
+#define FAT_ARCHIVE                 = 0x00000032;
+
+
 // /* filesystem for fat32 */
 // /*
 // struct fat32_fs {
@@ -38,6 +46,7 @@ struct fat_node_data
     bool layout_loaded;
     uint32_t metadata_cluster;
     uint32_t metadata_index;
+    union dir_entry entry;
 };
               
 struct fs_info {

@@ -222,3 +222,4 @@ u32 fs_clr_512(BUF_512 *buf, u32 *clock_head, u32 size, u32 cur) {
 fs_clr_512_err:
     return 1;
 }
+
