@@ -8,6 +8,7 @@
 
 exc_fn exceptions[32];   //function ptr
                          //typedef void (*exc_fn)(unsigned int, unsigned int, context*);
+exc_fn refill_exception;
 
 void do_exceptions(unsigned int status, unsigned int cause, context* pt_context) {
     int index = cause >> 2;  //CPO reg 13(CAUSE) : CAUSE[2:6]  Exc_Code[4:0]
@@ -28,6 +29,13 @@ void do_exceptions(unsigned int status, unsigned int cause, context* pt_context)
     }
 }
 
+void init_exception_table() {
+    int i=0;
+    for (i=0; i<32; i++) exceptions[i] = NULL;
+    /* Init the refill exception function */
+    refill_exception = NULL;
+}
+
 void register_exception_handler(int index, exc_fn fn) {
     index &= 31;
     exceptions[index] = fn;
@@ -42,6 +50,27 @@ void init_exception() {
         "li $t0, 0x800000\n\t"    //
         "mtc0 $t0, $13\n\t");     //REG 13: CAUSE = 0x0080_0000
                                   //CAUSE[23] = IV = 1, interrupt base address 0x8000_0200
+}
+
+void do_refill(unsigned int status, unsigned int cause, context* pt_context) {
+    if (refill_exception) {
+        refill_exception(status, cause, pt_context);       //call kernel/syscall.c
+    } else {
+        task_struct* pcb;
+        unsigned int badVaddr;
+        asm volatile("mfc0 %0, $8\n\t" : "=r"(badVaddr));   // "=r": constrain
+                                                            // the gcc can chose reg %0 arbitarily, as long as the badVaddr is also using the same reg.
+        pcb = get_curr_pcb();
+        kernel_printf("\nProcess %s exited due to exception cause=%x;\n", pcb->name, cause);
+        kernel_printf("status=%x, EPC=%x, BadVaddr=%x\n", status, pcb->context.epc, badVaddr);
+        pc_kill_syscall(status, cause, pt_context);
+        while (1)
+            ;
+    }
+}
+
+void register_refill_exception_handler(exc_fn fn) {
+    refill_exception = fn;
 }
 
 #pragma GCC pop_options

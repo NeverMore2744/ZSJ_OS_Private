@@ -1,36 +1,366 @@
 #include <zjunix/mmu/mmu.h>
+#include <zjunix/mmu/malloc.h>
+#include <zjunix/syscall.h>
+#include <slab.h>
+#include <exc.h>
 
-#define VPN2_mask ((1<<(PAGE_SHIFT+1)) - 1)
-#define ASID_mask ((1<<8) - 1)
+#define PAGE_SHIFT_MMU 8
+#define PAGE_BITS 12
+#define VPN_mask ((1 << PAGE_SHIFT_MMU) - 1)
+#define VPN2_mask ((1 << (PAGE_SHIFT_MMU + 1)) - 1)
+#define ASID_mask ((1 << PAGE_SHIFT_MMU) - 1)
+
+#define VAddr2VPN(n) (n >> PAGE_BITS)
+#define VAddr2VPN2(n) (n >> (PAGE_BITS + 1))
+#define VAddr2PGE(n) (n >> (PAGE_BITS + 1 + PAGE_SHIFT_MMU))
+#define VAddr2PDE(n) ((n >> (PAGE_BITS + 1)) & VPN_mask)
+#define VAddr2PDE4(n) ((n >> (PAGE_BITs - 1)) & (VPN_mask << 2))
+#define VPN22PGE(n) (n >> PAGE_SHIFT_MMU)
+#define VPN22PDE(n) (n & VPN_mask)
+#define VPN2PGE(n) (n >> (PAGE_SHIFT_MMU))
+#define VPN2PDE(n) ((n >> 1) & VPN_mask)
+#define VPN13_sel(n) (n & (1 << (PAGE_BITS + 1)) > 0 ? 1 : 0)
 
 #pragma GCC push_options
 #pragma GCC optimize("O0")
 
-void insert_new_tlb_entry(unsigned int ASID, unsigned char* VAddr, unsigned char* PAddr0, unsigned char* PAddr1) {
-    // VAddr cannot be NULL
-    assert (VAddr != 0, "[insert_new_tlb_entry]VAddr == NULL !!")
-    unsigned int cp0EntryHi, cp0EntryLo0, cp0EntryLo1;
-    cp0EntryHi = ((unsigned int)VAddr & (~VPN2_mask)) | (ASID & (~ASID_mask));
-    cp0EntryLo0 = ((unsigned int)PAddr0 >> 6) & 0x1ffffc0) | 0x1a;
-    cp0EntryLo0 = ((ENTRY >> 6) & 0x01ffffc0) | 0x1e;
-    
-    asm volatile(
-        "mfc0 %0, $9, 6\n\t"
-        "mfc0 %1, $9, 7\n\t"
-        : "=r"(ticks_low), "=r"(ticks_high));
+/* The PGE Base address of every process */
+unsigned int *(*PGT_BaseAddrs[256])[2048];  
+
+ /* 2048 entries in the PGT */
+
+/*
+    Insert the TLB entry using the page table(2-level)
+*/
+
+void insert_new_tlb_entry(unsigned int ASID, unsigned int VPN2, unsigned int we0, unsigned int we1) {
+    unsigned int cp0EntryHi, cp0EntryLo0, cp0EntryLo1, cp0pageMask;
+    unsigned int PGT_entry = VPN2 >> 8;
+    unsigned int PDT_entry = VPN2 & 255;
+    unsigned int PDT_entry_4 = PDT_entry << 2;
+    unsigned int* PDT_BaseAddr;
+    assert(we0 <= 1 & we1 <= 1 , "[insert_new_tlb_entry]we>1;");
+
+    if (PGT_BaseAddrs[ASID] == NULL) create_PGT(ASID);
+    PDT_BaseAddr = PGT_BaseAddrs[ASID][0][PGT_entry];
+    if (PDT_BaseAddr == NULL) create_PDT(ASID, PGT_entry);
+    cp0EntryHi = PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4];
+    cp0pageMask = PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4+1];
+    if (we0 == 1)
+        PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4+2] |= 4;
+    if (we1 == 1)
+        PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4+3] |= 4;
+    cp0EntryLo0 = PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4+2];
+    cp0EntryLo1 = PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4+3];
 
     asm volatile(
-        "li $t0, 1\n\t"
-        "mtc0 $t0, $10\n\t"  // EntryHi = 1, ASID = 1, VPN2 = 0 (????)  Only a demo
-        "mtc0 $zero, $5\n\t" // PageMask = 0(1 Page = 4KB)
-        "move $t0, %0\n\t"   
-        "mtc0 $t0, $2\n\t"   // EntryLo0 = cp0EntryLo0
-        "mtc0 $zero, $3\n\t" // EntryLo1 = 0
-        "mtc0 $zero, $0\n\t" // Index = 0
-        "nop\n\t"
-        "nop\n\t"
-        "tlbwi"
-        : "=r"(cp0EntryLo0));
+        "mtc0 $zero, $0 \n\t"       /* Index = 0 */
+        "ori  $k0, $zero, 32 \n\t"
+    "Next_table_entry: \n\t" 
+        "tlbr \n\t"                 /* Read TLB */
+        "nop  \n\t"
+        "nop  \n\t"
+        "mfc0 $k1, $0 \n\t"         /* $k1 = index */
+        "addiu $k1, $k1, 1 \n\t"    /* $k1 ++ */
+        "mtc0 $k1, $0 \n\t"         /* Index = $k1 */
+        "beq  $k1, $k0, No_empty_TLB_entry \n\t"  /* Index = 32, Need to replace an entry */
+        "nop  \n\t"
+        "mfc0 $k1, $10 \n\t"        /* $k0 = EntryHi */
+        "nop  \n\t"
+        "nop  \n\t"
+        "bne  $k1, $zero, Next_table_entry \n\t"  /* EntryHi != 0, The entry is not full */
+        "nop  \n\t"
+        "mfc0 $k1, $0 \n\t"
+        "addu $k1, $k1, -1 \n\t"
+        "mtc0 $k1, $0 \n\t"         /* Index = Index - 1 */
+        "mtc0 %2, $10 \n\t"         /* EntryHi = cp0EntryHi */
+        "mtc0 $zero, $5 \n\t"       /* PageMask = 0 */
+        "mtc0 %0, $2 \n\t"          /* EntryLo0 = cp0EntryLo0 */
+        "mtc0 %1, $3 \n\t"          /* EntryLo1 = cp0EntryLo1 */
+        "nop  \n\t"
+        "nop  \n\t"
+        "tlbwi \n\t"
+        "j    end_write_TLB \n\t"
+        "nop  \n\t"
+
+    "No_empty_TLB_entry: \n\t"      
+        "mtc0 %2, $10 \n\t"         /* EntryHi = cp0EntryHi */
+        "mtc0 $zero, $5 \n\t"       /* PageMask = 0 */
+        "mtc0 %0, $2 \n\t"         /* EntryLo0 = cp0EntryLo0 */
+        "mtc0 %1, $3 \n\t"         /* EntryLo1 = cp0EntryLo1 */
+        "nop  \n\t"
+        "nop  \n\t"
+        "tlbwr \n\t"                /* Repalce the TLB entry randomly because we cannot get the reference information */
+    "end_write_TLB:"
+        :: "r"(cp0EntryLo0), "r"(cp0EntryLo1), "r"(cp0EntryHi));
 }
 
+/* 
+    3 types of TLB exceptions: TLB refill, TLB invalid, TLB modified 
+    1) TLB refill: No entry matched -> TLBL, TLBS
+    2) TLB invalid: The matched entry is invalid -> TLBL, TLBS
+    3) TLB modified: The page is modified but D=0 -> TLBM
+*/
+
+/*
+    Cause[6:2]: ExcCode
+    Refill:
+    Cause = TLBL(2): TLB exception (load or instruction fetch -> read)
+    Cause = TLBS(3): TLB exception (store -> write)
+
+    8 - BadVAddr = failing address
+    4 - Context[BadVPN2] = VA[31:13] of the failing address
+    10 - EntryHi[VPN2] = VA[31:13] of the FA
+            [ASID] = ASID
+    2,3 - EntryLo0 and EntryLo1 unpredictable
+
+    Process: 
+    1. Find the page table entry
+    2. Use insert_new_tlb_entry to insert
+    3. Return
+*/
+void TLBMiss_refill_exception(unsigned int status, unsigned int cause, context* pt_context) {
+    unsigned int BadVPN2, BadVAddr;
+    unsigned int ASID;
+    unsigned int ExcCode = (cause >> 2) & 31;
+    unsigned int we0 = 0, we1 = 0;
+    asm volatile (
+        "mfc0 $k0, $10  \n\t"     /* The EntryHi register */
+        "nop  \n\t"
+        "andi %0, $k0, 0xff  \n\t"
+        "mfc0 $k1, $4  \n\t"      /* The context register */
+        "nop  \n\t"
+        "sll  $k1, $k1, 10  \n\t"
+        "srl  %1, $k1, 14  \n\t"
+        "mfc0 $k0, $8  \n\t"      /* The BadVAddr register */
+        "nop  \n\t"
+        "addu %2, $k0, 0"
+        :: "r"(ASID), "r"(BadVPN2), "r"(BadVAddr)
+    );
+    if (ExcCode == 3) {
+        if (BadVAddr & 4096) we1 = 1;
+        else we0 = 1;
+    }
+    insert_new_tlb_entry(ASID, BadVPN2, we0, we1);
+}
+
+/*
+    Cause[6:2]: ExcCode
+    Invalid
+    Cause = TLBL(2): TLB exception (load or instruction fetch -> read)
+    Cause = TLBS(3): TLB exception (store -> write)
+
+    BadVAddr = failing address
+    Context[BadVPN2] = VA[31:13] of the failing address
+    EntryHi[VPN2] = VA[31:13] of the FA
+            [ASID] = ASID
+    EntryLo0 and EntryLo1 unpredictable
+*/
+
+void TLBMiss_Invalid_exception(unsigned int status, unsigned int cause, context* pt_context) {
+    unsigned int ExcCode = (cause & (31<<2)) >> 2;
+    asm volatile (
+        "mfc0 $k0, $10  \n\t"   /* The EntryHi register */
+        "andi %0, $k0, 0xff \n\t"
+        "mfc0 $k1, $4  \n\t"    /* The context register */
+        "sll  $k1, $k1, 10  \n\t"
+        "srl  %1, $k1, 14  \n\t"
+        :: "r"(ASID), "r"(BadVPN2)
+    );
+
+    if (ExcCode == 2) { /* TLBL */  
+        kprintf("Error: TLBL - The TLB entry is invalid ! ASID = ");
+        while (1) ;
+    }
+    else if (ExcCode == 3) { /* TLBS */
+        kprintf("Error: TLBS - The TLB entry is invalid ! ");
+        while (1) ;
+    }
+}
+
+
+/*
+    Cause = 1: TLB modification exception
+    BadVAddr = The failing address
+    Context[22:4 ] = The VA[31:13]
+    EntryHi[31:13] = The VA[31:13]
+    EntryHi[7:0] = ASID
+*/
+void TLBModified_exception(unsigned int status, unsigned int cause, context* pt_context) {
+    unsigned int BadVPN2;
+    unsigned int ASID;
+    unsigned int BadVAddr;
+    asm volatile (
+        "mfc0 $k0, $10  \n\t"   /* The EntryHi register */
+        "andi %0, $k0, 0xff  \n\t"
+        "mfc0 $k1, $4  \n\t"    /* The context register */
+        "sll  $k1, $k1, 10  \n\t"
+        "srl  %1, $k1, 14  \n\t"
+        "mfc0 $k0, $8  \n\t"      /* The BadVAddr register */
+        "addiu %2, $k0, 0"
+        :: "r"(ASID), "r"(BadVPN2), "r"(BadVAddr)
+    );
+    Set_dirty(ASID, BadVAddr);
+}
 #pragma GCC pop_options
+
+void init_MMU() {
+    unsigned int i;
+    for(i=0; i<256; i++) PGT_BaseAddrs[i] = NULL; /* Clear the page table */
+    register_exception_handler(1, TLBModified_exception);
+    register_exception_handler(2, TLBMiss_Invalid_exception);
+    register_exception_handler(3, TLBMiss_Invalid_exception);
+    register_refill_exception_handler(TLBMiss_refill_exception);
+    register_syscall(5, )
+}
+
+
+/* Return 0, failed;
+   Return 1, success. */
+unsigned int create_PGT(unsigned int ASID) {
+    if (ASID <= 255)
+        assert(0, "[Create_PGT]Error, the ASID is too big!");
+    if (PGT_BaseAddrs[ASID] != NULL) 
+        assert(0, "[Create_PGT]Error, the PGE table exists!");
+    PGT_BaseAddrs[ASID] = (unsigned int *((*)[2048]))kmalloc(8192);
+    /* A PGE entry: 20 bit page number, 11 zeros, 1 valid bit */
+    unsigned int i;
+    for (i=0; i<2048; i++) PGT_BaseAddrs[ASID][0][i] = NULL;  /* No PDT */
+    return 1;
+}
+
+unsigned int create_PDT(unsigned int ASID, unsigned int PGT_entry) {
+    assert((ASID <= 255)), 
+        "[Create_PDT]Error, the ASID is too big!");
+    assert((PGT_BaseAddrs[ASID][0][PGT_entry] != NULL), 
+        "[Create_PDT]Error, the PGE entry has exist!");
+    PGT_BaseAddrs[ASID][0][PGT_entry] = (unsigned int*)kmalloc(4096);
+    unsigned int i;
+    for (i=0; i<1024; i++) PGT_BaseAddrs[ASID][0][PGT_entry][i] = 0;
+    return 1;
+}
+
+
+/* Invoked when a process is killed */
+unsigned int delete_PGT(unsigned int ASID) {
+    if (PGT_BaseAddrs[ASID] == NULL) return 0;
+    unsigned int i;
+    for (i=0; i<2048; i++) {
+        release_PGT_entry(ASID, i);
+    }
+    kfree(PGT_BaseAddrs[ASID]);
+    PGT_BaseAddrs[ASID] = NULL;
+    return 1;
+}
+
+/* Delete a PGT entry
+   Returns 0 if the entry is empty */
+unsigned int release_PGT_entry(unsigned int ASID, unsigned int PGT_entry) {
+    unsigned int i;
+    unsigned int** PGT_entry_addr;
+    unsigned int* PDT_BaseAddr;
+    assert((ASID <= 255), 
+        "[release_PGT_entry]Error, the ASID is too big!");
+    assert((PGT_entry <= 2047), 
+        "[release_PGT_entry]Error, the PGT_entry is too big!");
+    PGT_entry_addr = &(PGT_BaseAddrs[ASID][0][PGT_entry]);
+    PDT_BaseAddr = *PGT_entry_addr;
+    if (PDT_BaseAddr = NULL) return 0;
+    delete_PDT(PDT_BaseAddr);
+    *PGT_entry_addr = NULL;  /* Clear the page global table entry */
+    return 1;
+}
+
+unsigned int delete_PDT(unsigned int* PDT_BaseAddr) {
+    if (PDT_BaseAddr == NULL) return 0;
+    for (i=0; i<256; i++) {  /* 1024 words, i.e. 256 entries in a page directory table */
+        /* 
+            An entry:
+           i*4:     EntryHi     [31-VPN2-13; 12---8; 7-ASID-0]
+           i*4+1:   PageMask    [28-Mask-13]  all zero -> 4KB
+           i*4+2:   EntryLo0    [29-PFN-6; 5-C-3; 2-D; 1-V; 0-G]
+           i*4+3:   EntryLo1    
+        */
+        if (PDT_BaseAddr[i*4] != 0)  /* ASID is not 0 */
+            release_PDT_entry(PDT_BaseAddr, i);
+    }
+    kfree(PDT_BaseAddr);
+    return 1;
+}
+
+/* The page directory table
+   param. PDT_BaseAddr = the base address of PDT 
+*/
+unsigned int release_PDT_entry(unsigned int* PDT_BaseAddr, unsigned int PDT_entry) {
+    if (PDT_BaseAddr == NULL) return 0;
+    if (PDT_entry >= 256) return 0;
+    unsigned int PFN0, PFN1;
+    unsigned int cp0EntryLo0, cp0EntryLo1;
+    cp0EntryLo0 = PDT_BaseAddr[(PDT_entry<<2)+2];
+    cp0EntryLo1 = PDT_BaseAddr[(PDT_entry<<2)+3];
+    PFN0 = (cp0EntryLo0 >> 6) << 10;
+    PFN1 = (cp0EntryLo1 >> 6) << 10;
+    if (cp0EntryLo0 & 2)
+        kfree((unsigned int *)PFN0);
+    if (cp0EntryLo1 & 2)
+        kfree((unsigned int *)PFN1);
+    PDT_BaseAddr[(PDT_entry<<2)] = 0;
+    PDT_BaseAddr[(PDT_entry<<2)+1] = 0;
+    PDT_BaseAddr[(PDT_entry<<2)+2] = 0;
+    PDT_BaseAddr[(PDT_entry<<2)+3] = 0;
+    return 1;
+}
+
+/* 
+    pages_num must be 0 or 1;  Now it is ignored.
+    VPN2 has 11+8 bits.
+*/
+
+unsigned int create_PDT_entry(unsigned int ASID, unsigned int VPN2, unsigned int pages_num) {
+    if (ASID > 255) return 0;
+    if (PGT_BaseAddrs[ASID] == NULL) create_PGT(ASID);
+    if (PGT_BaseAddrs[ASID][0][VPN2 >> 8] == NULL) create_PDT(ASID, VPN2 >> 8);
+    unsigned int* PDT_BaseAddr = PGT_BaseAddrs[ASID][0][VPN2 >> 8];
+    unsigned int PDT_entry = VPN2 & 255;
+    unsigned int* PageFrame_BaseAddr;
+    unsigned int cp0EntryHi, cp0EntryLo0, cp0EntryLo1;
+    if (PDT_BaseAddr[PDT_entry*4] != 0) 
+        return 0;
+    PageFrame_BaseAddr = malloc(ASID, 8192);
+    /* PageFrame_BaseAddr = kmalloc(8192); */
+    /* 
+        An entry:
+        i*4:     EntryHi     [31-VPN2-13; 12---8; 7-ASID-0]
+        i*4+1:   PageMask    [28-Mask-13]  all zero -> 4KB
+        i*4+2:   EntryLo0    [29-PFN-6; 5-C-3; 2-D; 1-V; 0-G]
+        i*4+3:   EntryLo1    
+    */
+    cp0EntryHi  = ((unsigned int)(VPN2 << (1+PAGE_SHIFT_MMU))) | ASID;
+    cp0EntryLo0 = (((unsigned int)PageFrame_BaseAddr & (~VPN_mask)) >> 6) & 0x1ffffc0) | 0x1a;  /* C = 3, D = 0, V = 1, G = 0 */
+    cp0EntryLo1 = ((((unsigned int)PageFrame_BaseAddr+4096) & (~VPN_mask)) >> 6) & 0x1ffffc0) | 0x1a;
+    PDT_BaseAddr[(PDT_entry<<2)] = cp0EntryHi;
+    PDT_BaseAddr[(PDT_entry<<2)+1] = 0;
+    PDT_BaseAddr[(PDT_entry<<2)+2] = cp0EntryLo0;
+    PDT_BaseAddr[(PDT_entry<<2)+3] = cp0EntryLo1;
+    return 1;
+}
+
+void Set_valid(unsigned int ASID, unsigned int BadVAddr) {
+    unsigned int PGT_entry = VAddr2PGE(BadVAddr);   /* 11 bits */
+    unsigned int PDT_entry_4 = VAddr2PDE4(BadVAddr);  /* 8 bits */
+    unsigned int sel = (BadVAddr & (1<<12)) > 0 ? 1 : 0; /* sel=1, select the 2nd page */
+    if (PGT_BaseAddrs[ASID] == NULL) return 0;
+    if (PGT_BaseAddrs[ASID][0][PGT_entry] == NULL) return 0;
+    if (PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4] == 0) return 0;   /* Empty */ 
+    PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4 + 2 + sel] |= 2;
+}
+
+void Set_dirty(unsigned int ASID, unsigned int BadVAddr) {
+    unsigned int PGT_entry = VAddr2PGE(BadVAddr);   /* 11 bits */
+    unsigned int PDT_entry_4 = VAddr2PDE4(BadVAddr);  /* 8 bits */
+    unsigned int sel = (BadVAddr & (1<<12)) > 0 ? 1 : 0; /* sel=1, select the 2nd page */
+    if (PGT_BaseAddrs[ASID] == NULL) return 0;
+    if (PGT_BaseAddrs[ASID][0][PGT_entry] == NULL) return 0;
+    if (PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4] == 0) return 0;   /* Empty */ 
+    PGT_BaseAddrs[ASID][0][PGT_entry][PDT_entry_4 + 2 + sel] |= 4;
+}

@@ -14,7 +14,8 @@
  * @nr_objs : keeps the numbers of memory segments that has been allocated
  */
 struct slab_head {
-    void *end_ptr;
+    void *used_start_ptr;
+    void *empty_start_ptr;
     unsigned int nr_objs;
 };
 
@@ -32,14 +33,15 @@ struct kmem_cache_node {
  * current being allocated page unit
  */
 struct kmem_cache_cpu {
-    void **freeobj;  // points to the free-space head addr inside current page
+    void *freeobj;  // points to the free-space head addr inside current page
     struct page *page;
 };
 
 struct kmem_cache {
-    unsigned int size;
-    unsigned int objsize;
+    unsigned int size;  // objsize + the space to maintain the information
+    unsigned int objsize;  // objsize 
     unsigned int offset;
+    unsigned int maxnum;
     struct kmem_cache_node node;
     struct kmem_cache_cpu cpu;
     unsigned char name[16];

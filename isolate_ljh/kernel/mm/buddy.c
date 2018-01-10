@@ -34,7 +34,7 @@ void init_pages(unsigned int start_pfn, unsigned int end_pfn) {
         (pages + i)->reference = 1;
         (pages + i)->virtual = (void *)(-1);
         (pages + i)->bplevel = (-1);
-        (pages + i)->slabp = 0;  // initially, the free space is the whole page
+        //(pages + i)->slabp = 0;  // initially, the free space is the whole page
         INIT_LIST_HEAD(&(pages[i].list));
     }
 }
@@ -45,6 +45,10 @@ void init_buddy() {
     unsigned int i;
     
     bp_base = bootmm_alloc_pages(bpsize * bmm.max_pfn, _MM_KERNEL, 1 << PAGE_SHIFT);
+    /*
+        unsigned char *bootmm_alloc_pages(unsigned int size, unsigned int type, unsigned int align);
+        Its return value[31] is not 1.
+    */
     
     // bootmm is used here in buddy
     if (!bp_base) {
@@ -60,12 +64,16 @@ void init_buddy() {
 
     kernel_start_pfn = 0;
     kernel_end_pfn = 0;
+    // Take the final segment of bootmm
     for (i = 0; i < bmm.cnt_infos; ++i) {
         if (bmm.info[i].end > kernel_end_pfn)
             kernel_end_pfn = bmm.info[i].end;
     }
     kernel_end_pfn >>= PAGE_SHIFT;
 
+    // Start allocating after the final segment of bootmm
+    // #define MAX_BUDDY_ORDER 4
+    // alignment
     buddy.buddy_start_pfn = (kernel_end_pfn + (1 << MAX_BUDDY_ORDER) - 1) &
                             ~((1 << MAX_BUDDY_ORDER) - 1);              // the pages that bootmm using cannot be merged into buddy_sys
     buddy.buddy_end_pfn = bmm.max_pfn & ~((1 << MAX_BUDDY_ORDER) - 1);  // remain 2 pages for I/O
@@ -76,6 +84,7 @@ void init_buddy() {
         INIT_LIST_HEAD(&(buddy.freelist[i].free_head));
     }
     buddy.start_page = pages + buddy.buddy_start_pfn;
+    // buddy.start_page is a *page (pointer)
     init_lock(&(buddy.lock));
 
     for (i = buddy.buddy_start_pfn; i < buddy.buddy_end_pfn; ++i) {
@@ -83,10 +92,16 @@ void init_buddy() {
     }
 }
 
-// bplevel: 粒度  
+/* bplevel: 粒度. 0,1,2,3,4
+ * __free_pages() passes all the free pages in the bootmm to buddy
+ * If it is not in the bootmm, then also free it and combine the pages
+ * @param pbpage: The start page
+ * @bplevel: up
+ * 
+ * */
 void __free_pages(struct page *pbpage, unsigned int bplevel) {
     /* page_idx -> the current page
-     * bgroup_idx -> the buddy group that current page is in
+     * bgroup_idx -> the buddy group that current page is in (going to be combined)
      */
     unsigned int page_idx, bgroup_idx;
     unsigned int combined_idx, tmp;
@@ -99,8 +114,11 @@ void __free_pages(struct page *pbpage, unsigned int bplevel) {
     lockup(&buddy.lock);
 
     page_idx = pbpage - buddy.start_page;
-    // complier do the sizeof(struct) operation, and now page_idx is the index
+    // complier do the sizeof(struct) division operation, and now page_idx is the index
 
+    // buddy.start_page ---- [+page_idx] ----- pbpage ----- [+bgroup_idx-page_idx] ------ bgroup_page
+    // Combines the neighbouring bgroup_page 
+    // (Example: pidx = 19, bplevel = 0, then bgidx = 18)
     while (bplevel < MAX_BUDDY_ORDER) {
         bgroup_idx = page_idx ^ (1 << bplevel);
         bgroup_page = pbpage + (bgroup_idx - page_idx);
@@ -111,6 +129,7 @@ void __free_pages(struct page *pbpage, unsigned int bplevel) {
             break;
         }
         list_del_init(&bgroup_page->list);
+        // delete and init
         --buddy.freelist[bplevel].nr_free;
         set_bplevel(bgroup_page, -1);
         combined_idx = bgroup_idx & page_idx;
@@ -126,6 +145,7 @@ void __free_pages(struct page *pbpage, unsigned int bplevel) {
     unlock(&buddy.lock);
 }
 
+// It returns a (struct page*), but not an address pointer
 struct page *__alloc_pages(unsigned int bplevel) {
     unsigned int current_order, size;
     struct page *page, *buddy_page;
@@ -135,34 +155,32 @@ struct page *__alloc_pages(unsigned int bplevel) {
 
     for (current_order = bplevel; current_order <= MAX_BUDDY_ORDER; ++current_order) {
         free = buddy.freelist + current_order;
-        if (!list_empty(&(free->free_head)))
-            goto found;
+        if (!list_empty(&(free->free_head))) {
+            page = container_of(free->free_head.next, struct page, list);
+            // #define container_of(ptr, type, member) ((type*)((char*)ptr - (char*)&(((type*)0)->member)))
+            list_del_init(&(page->list));
+            set_bplevel(page, bplevel);
+            set_flag(page, _PAGE_ALLOCED);
+            // set_ref(page, 1);
+            --(free->nr_free);
+            size = 1 << current_order;
+            while (current_order > bplevel) {
+                --free; // free points to the smaller level of list
+                --current_order;
+                size >>= 1;
+                buddy_page = page + size;   
+                // Split a big buddy into 2 small buddies, 
+                // and insert the second one to the head of free list
+                list_add(&(buddy_page->list), &(free->free_head));
+                ++(free->nr_free);
+                set_bplevel(buddy_page, current_order);
+            }
+            unlock(&buddy.lock);
+            return page;
+        }
     }
-
     unlock(&buddy.lock);
     return 0;
-
-found:
-    page = container_of(free->free_head.next, struct page, list);
-    list_del_init(&(page->list));
-    set_bplevel(page, bplevel);
-    set_flag(page, _PAGE_ALLOCED);
-    // set_ref(page, 1);
-    --(free->nr_free);
-
-    size = 1 << current_order;
-    while (current_order > bplevel) {
-        --free;
-        --current_order;
-        size >>= 1;
-        buddy_page = page + size;
-        list_add(&(buddy_page->list), &(free->free_head));
-        ++(free->nr_free);
-        set_bplevel(buddy_page, current_order);
-    }
-
-    unlock(&buddy.lock);
-    return page;
 }
 
 void *alloc_pages(unsigned int bplevel) {
@@ -172,8 +190,12 @@ void *alloc_pages(unsigned int bplevel) {
         return 0;
 
     return (void *)((page - pages) << PAGE_SHIFT);
+    // This return value[31] is not one
+    // page-pages is the physical page number 
+    // (void *)((page - pages) << PAGE_SHIFT) is the real address
 }
 
 void free_pages(void *addr, unsigned int bplevel) {
     __free_pages(pages + ((unsigned int)addr >> PAGE_SHIFT), bplevel);
+    // addr >> PAGE_SHIFT is the page number
 }

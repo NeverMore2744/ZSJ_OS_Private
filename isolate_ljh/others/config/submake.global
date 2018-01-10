@@ -1,0 +1,21 @@
+#subfile: submake.global + make.global
+#global: make.global
+
+#top dir contains bin, map, etc.
+#sub dir : only needs to clean obj files.
+
+# name conflicts
+# global make files would not be disturbed by sub dirs' layout.
+
+
+# recursively build
+.PHONY: all
+all: $(OBJS) build-subdirs
+
+# recursively clean
+.PHONY: clean
+clean: clean-subdirs
+	@echo CLEAN $(OBJS)
+	@rm -f $(OBJS)
+
+include $(MAKE_INCLUDE)

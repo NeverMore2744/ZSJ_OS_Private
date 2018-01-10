@@ -1,32 +1,43 @@
 .extern init_kernel
 .globl start
 .globl exception
+.extern PGT_BaseAddr_ASID
 .extern kernel_sp  # Defined in arch.c/arch.h
 .extern tlb_ready_index
 .extern exception_handler # Not used
 .extern interrupt_handler # Not used
+#.extern PGE_BaseAddr; # The base addr of Page Global Entry
 
 .set noreorder
 .set noat
 .align 2    #4(2^2) bytes alignment
 
+.org 0x0000 #0x8000_0000: Refill exception
 exception:
+	lui  $k0, 0x8000
+	sltu $k0, $sp, $k0
+	beq  $k0, $zero, refill_save_context
+	move $k1, $sp
+	la   $k0, kernel_sp
+	j    refill_save_context
+	lw   $sp, 0($k0)
+
 	#TLB refill
-	la $k0, tlb_ready_index
-	lw $k0, 0($k0)
- 	mfc0 $k0, $4  # Context
- 	lw $k1, 0($k0)
- 	mtc0 $k1, $2  # EntryLo0 refill
- 	lw $k1, 4($k0)
- 	mtc0 $k1, $3  # EntryLo1 refill
- 	lw $k1, 8($k0)
- 	mtc0 $k1, $10 # EntryHi refill
- 	lw $k1, 12($k0)
- 	mtc0 $k1, $5  # PageMask refill
- 	nop #	CP0 hazard
- 	nop #  	CP0 hazard
- 	tlbwr
- 	eret
+	#la $k0, tlb_ready_index
+	#lw $k0, 0($k0)
+ 	#mfc0 $k0, $4  # Context
+ 	#lw $k1, 0($k0)
+ 	#mtc0 $k1, $2  # EntryLo0 refill
+ 	#lw $k1, 4($k0)
+ 	#mtc0 $k1, $3  # EntryLo1 refill
+ 	#lw $k1, 8($k0)
+ 	#mtc0 $k1, $10 # EntryHi refill
+ 	#lw $k1, 12($k0)
+ 	#mtc0 $k1, $5  # PageMask refill
+ 	#nop #		CP0 hazard
+ 	#nop #  	CP0 hazard
+ 	#tlbwr
+ 	#eret
 
 .org 0x0180 #0x8000_0180: most of the exception
 	lui $k0, 0x8000
@@ -62,6 +73,56 @@ exception:
 # 
 # The time it takes for the dispatcher to stop one process and start another is known as the dispatch latency.
 # 
+refill_save_context:
+	addiu $sp, $sp, -128
+	sw $at, 4($sp)
+	sw $v0, 8($sp)
+	sw $v1, 12($sp)
+	sw $a0, 16($sp)
+	sw $a1, 20($sp)
+	sw $a2, 24($sp)
+	sw $a3, 28($sp)
+	sw $t0, 32($sp)
+	sw $t1, 36($sp)
+	sw $t2, 40($sp)
+	sw $t3, 44($sp)
+	sw $t4, 48($sp)
+	sw $t5, 52($sp)
+	sw $t6, 56($sp)
+	sw $t7, 60($sp)
+	sw $s0, 64($sp)
+	sw $s1, 68($sp)
+	sw $s2, 72($sp)
+	sw $s3, 76($sp)
+	sw $s4, 80($sp)
+	sw $s5, 84($sp)
+	sw $s6, 88($sp)
+	sw $s7, 92($sp)
+	sw $t8, 96($sp)
+	sw $t9, 100($sp)
+	sw $gp, 112($sp)
+	sw $k1, 116($sp)
+	sw $fp, 120($sp)
+	sw $ra, 124($sp)
+	mfc0 $a0, $12
+	mfc0 $a1, $13
+	mfc0 $a2, $14
+	mfhi $t3
+	mflo $t4
+	sw $a2, 0($sp) # EPC
+	sw $t3, 104($sp) # HI
+	sw $t4, 108($sp) # LO
+
+# 	jump to do_refill
+	move $a2, $sp
+	addi $sp, $sp, -32 
+	jal  do_refill		# Refill exception service routine
+	nop
+	addi $sp, $sp, 32
+	j    restore_context
+	nop
+
+
 interrupt_save_context:
 	#the order of layout of the regs saving in the stack is important.
 	#if you change this, you need to change struct contex as well

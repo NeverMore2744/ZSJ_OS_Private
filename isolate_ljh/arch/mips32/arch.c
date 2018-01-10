@@ -17,7 +17,6 @@ unsigned int* const GPIO_UART_CTRL = (unsigned int*)0xbfc0901c;  // UART control
 unsigned int* const GPIO_CURSOR = (unsigned int*)0xbfc09020;     // Cursor 8-bit frequency 8-bit row 8-bit col
 unsigned int* const VGA_MODE = (unsigned int*)0xbfc09024;        // enable graphic mode
 
-// kernel sp
 volatile unsigned int kernel_sp = 0x81000000;
 volatile unsigned int tlb_ready_index = 0x80001000;
 

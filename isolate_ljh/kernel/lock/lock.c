@@ -6,6 +6,7 @@ void init_lock(struct lock_t *lock) {
     INIT_LIST_HEAD(&(lock->wait));
 }
 
+// An atomic operation
 unsigned int lockup(struct lock_t *lock) {
     unsigned int old_ie;
 
@@ -20,6 +21,7 @@ unsigned int lockup(struct lock_t *lock) {
     return 1;
 }
 
+// An atomic operation as well
 unsigned int unlock(struct lock_t *lock) {
     unsigned int old_ie;
 

@@ -17,16 +17,108 @@ void set_mminfo(struct bootmm_info *info, unsigned int start, unsigned int end, 
     info->type = type;
 }
 unsigned char bootmmmap[MACHINE_MMSIZE >> PAGE_SHIFT];
+/* Takes 128KB spaces of memory */
+
 /*
 * return value list:
 *		0 -> insert_mminfo failed
-*		1 -> insert non-related mm_segment
-*		2 -> insert forward-connecting segment
+*		1 -> insert non-related mm_segment      
+            [-***-]             [-new-] [-***-]
+*		2 -> insert forward-connecting segment  
+            [-old-]             [-new-] [-old_diff_type-]   -> [-old+new-][-old_diff_type-]
 *		4 -> insert following-connecting segment
+            [-***-]             [-new-] [-old-]             -> [-old_diff_type-] [-new+old-]
 *		6 -> insert forward-connecting segment to after-last position
+            [-old-]             [-new-] end                 -> [-old+new-]
 *		7 -> insert bridge-connecting segment(remove_mminfo is called
-for deleting
+            for deleting
+            [-old-]             [-new-] [-old-]             -> [-old+new+old-]
 --
+*/
+
+/* 
+* Insert a mminfo at the end of the array
+* @param mm 	: the bootmm struct pointer
+* @param start	: The start page frame number of inserted page
+* @param end    : The end page frame number of inserted page
+* @param type   : The type of the inserted page
+*/
+
+unsigned int pushback_mminfo(struct bootmm *mm, unsigned int start, unsigned int end, unsigned int type) {
+    unsigned int i;
+    if (mm->cnt_infos >= MAX_INFO)
+        return 0;
+    set_mminfo(mm->info + mm->cnt_infos, start, end, type);
+    mm->cnt_infos++;
+    return 1;
+}
+
+/*
+* Empty the index-th info element
+    and increment "mm->cnt_infos".
+* @param mm 	: the bootmm struct pointer
+* @param index	: The index of the bootmm info array
+*/
+
+unsigned int move_mminfo(struct bootmm *mm, unsigned int index) {
+    unsigned int i, start, end, type;
+    if (mm->cnt_infos >= MAX_INFO)
+        return 0;
+    mm->cnt_infos ++;
+    for (i = mm->cnt_infos; i > index; i--) {
+        start = mm->info[i-1].start;
+        end = mm->info[i-1].end;
+        type = mm->info[i-1].type;
+        set_mminfo(mm->info + i, start, end, type);
+    }
+    return 1;
+}
+
+/* 
+* Used by insert_mminfo
+* @param mm 	: the bootmm struct pointer
+* @param start	: The start page frame number of inserted page
+* @param end    : The end page frame number of inserted page
+* @param type   : The type of the inserted page
+*/
+
+unsigned int insert_mminfo_no_lapped(struct bootmm *mm, unsigned int start, unsigned int end, unsigned int type) {
+    unsigned int i;
+    if (mm->cnt_infos >= MAX_INFO) 
+        return 0;
+    for (i = 0; i < mm->cnt_infos; i++) {
+        if (i != mm->cnt_infos - 1) {
+            if (i > 0) {
+                if (start > mm->info[i].end && end < mm->info[i+1].start) {
+                    // Make the i+1 th info[] to empty
+                    move_mminfo(mm, i+1);
+                    set_mminfo(mm->info + (i+1), start, end, type);
+                    return 1;
+                }
+            }
+            else { // The first segment
+                if (end < mm->info[i+1].start) {
+                    move_mminfo(mm, 0);
+                    set_mminfo(mm->info, start, end, type);
+                    return 1;
+                }
+            }
+        } 
+        else if (start > mm->info[i].start) {
+            pushback_mminfo(mm, start, end, type);
+            return 1;
+        }
+        if (mm->info[i].start > end) return 0;
+    }
+    return 0;
+}
+
+/* 
+* Used by insert_mminfo
+* @param mm 	: the bootmm struct pointer
+* @param start	: The start page frame number of inserted page
+* @param end    : The end page frame number of inserted page
+* @param type   : The type of the inserted page
 */
 unsigned int insert_mminfo(struct bootmm *mm, unsigned int start, unsigned int end, unsigned int type) {
     unsigned int i;
@@ -35,6 +127,10 @@ unsigned int insert_mminfo(struct bootmm *mm, unsigned int start, unsigned int e
             continue;  // ignore the type-mismatching items to find one likely
                        // mergable
         if (mm->info[i].end == start - 1) { // [-old-][-new-]
+                // Three conditions:
+                // 7. The same type old segment
+                // 2. The different type old segment
+                // 6. The end
             if ((i + 1) < mm->cnt_infos) {
                 // current info is still not the last segment
                 if (mm->info[i + 1].type != type) {  // [-old-][-new-][-old_diff_type-]
@@ -48,12 +144,14 @@ unsigned int insert_mminfo(struct bootmm *mm, unsigned int start, unsigned int e
                     }
                 }
             } else {  // current info is the last segment
+                // [-old-][-new-]
                 // extend the last segment to contain the new-in mm
                 mm->info[i].end = end;
                 return 6;
             }
         }
         if (mm->info[i].start - 1 == end) {  // [-new-][-old-]
+                // Connect to the following segment
             kernel_printf("type of %d : %x, type: %x", i, mm->info[i].type, type);
             mm->info[i].start = start;
             return 4;
@@ -61,9 +159,9 @@ unsigned int insert_mminfo(struct bootmm *mm, unsigned int start, unsigned int e
     }
 
     if (mm->cnt_infos >= MAX_INFO)
-        return 0;  // cannot
-    set_mminfo(mm->info + mm->cnt_infos, start, end, type);
-    ++mm->cnt_infos;
+        return 0;  
+        // cannot allocate segments
+    insert_mminfo_no_lapped(mm, start, end, type);
     return 1;  // individual segment(non-connecting to any other)
 }
 
@@ -77,7 +175,11 @@ unsigned int split_mminfo(struct bootmm *mm, unsigned int index, unsigned int sp
 
     start = mm->info[index].start;
     end = mm->info[index].end;
-    split_start &= PAGE_ALIGN;
+    //split_start &= PAGE_ALIGN;  // PAGE_ALIGN = 0xffff_f000
+    split_start >>= PAGE_SHIFT;     
+        /*
+            split_start should be the frame number instead of byte addresses
+        */
 
     if ((split_start <= start) || (split_start >= end))
         return 0;  // split_start out of range
@@ -113,17 +215,26 @@ void init_bootmm() {
     unsigned int index;
     unsigned char *t_map;
     unsigned int end;
-    end = 16 * 1024 * 1024;
+    end = 16 * 1024 * 1024; 
+        // The final byte of the boot memory
     kernel_memset(&bmm, 0, sizeof(bmm));
-    bmm.phymm = get_phymm_size();  // 128*1024*1024, 128M
-    bmm.max_pfn = bmm.phymm >> PAGE_SHIFT;  // 2^15
-    bmm.s_map = bootmmmap;
-    bmm.e_map = bootmmmap + sizeof(bootmmmap);
+    bmm.phymm = get_phymm_size();  // 512*1024*1024, 512M
+    bmm.max_pfn = bmm.phymm >> PAGE_SHIFT;  // 2^17 frames
+    bmm.s_map = bootmmmap;  
+        // unsigned char bootmmmap[MACHINE_MMSIZE >> PAGE_SHIFT];
+        // The first map of boot memory
+        // A map is corresponded to a [[page frame]]
+    bmm.e_map = bootmmmap + sizeof(bootmmmap); 
+        // The end map of boot memory
+        // s_map -> e_map contains only the boot memory
     bmm.cnt_infos = 0;
+        // get number of infos stored in bootmm now
     kernel_memset(bmm.s_map, PAGE_FREE, sizeof(bootmmmap));
+        // Set all the page frames to free
     insert_mminfo(&bmm, 0, (unsigned int)(end - 1), _MM_KERNEL);
+        // Set all the frames before end to kernal
     bmm.last_alloc_end = (((unsigned int)(end) >> PAGE_SHIFT) - 1);
-
+        // The last allocation address
     for (index = 0; index<end>> PAGE_SHIFT; index++) {
         bmm.s_map[index] = PAGE_USED;
     }
@@ -149,7 +260,9 @@ void set_maps(unsigned int s_pfn, unsigned int cnt, unsigned char value) {
  * @param s_pfn    : the allocating begin page frame node
  * @param e_pfn	   : the allocating end page frame node
  * return value  = 0 :: allocate failed, else return index(page start)
+ * return value != 0 :: The start address of the page(not in kernel mode)
  */
+
 unsigned char *find_pages(unsigned int page_cnt, unsigned int s_pfn, unsigned int e_pfn, unsigned int align_pfn) {
     unsigned int index, tmp;
     unsigned int cnt;

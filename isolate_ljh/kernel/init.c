@@ -12,6 +12,7 @@
 #include <zjunix/slab.h>
 #include <zjunix/syscall.h>
 #include <zjunix/time.h>
+#include <vm/vm.h>
 #include "../usr/ps.h"
 
 // Print machine information
@@ -51,46 +52,13 @@ void create_startup_process() {
 }
 #pragma GCC pop_options
 
-void test_(){
-    *GPIO_LED = 0x0000AA55;
-    unsigned char* k1 = kmalloc(4096);
-    unsigned char* k2 = kmalloc(8192);
-    unsigned char* k3 = kmalloc(12304);
-    unsigned char* k4 = kmalloc(9536);
-    unsigned char* k5 = kmalloc(90);
-    unsigned char* k6 = kmalloc(12);
-    unsigned char* k7 = kmalloc(8);
-    kernel_printf("%x %x %x %x\n%x %x %x\n", k1, k2, k3, k4, k5, k6, k7);
-    kfree(k1);
-    kfree(k2);
-    kfree(k3);
-    kfree(k4);
-    kfree(k5);
-    kfree(k6);
-    kfree(k7);
-    k4 = kmalloc(4923);
-    k1 = kmalloc(4096);
-    k2 = kmalloc(4096);
-    k3 = kmalloc(8192);
-    k5 = kmalloc(128);
-    k6 = kmalloc(256);
-    k7 = kmalloc(512);
-    kernel_printf("%x %x %x %x\n%x %x %x\n", k1, k2, k3, k4, k5, k6, k7);
-}
-
-void delay() {
-    unsigned int k=0;
-    while(k<250000) {
-        k++;
-    }
-}
-
 void init_kernel() {
     kernel_clear_screen(31);
     // Exception
     init_exception();
-    // Page table
-    init_pgtable();
+    init_exception_table();
+    // TLB
+    init_TLB();
     // Drivers
     init_vga();
     init_ps2();
@@ -117,16 +85,18 @@ void init_kernel() {
     init_pc();
     create_startup_process();
     log(LOG_END, "Process Control Module.");
+    // MMU modules
+    log(LOG_START, "MMU modules.");
+    init_MMU();
+    log(LOG_END, "MMU modules.")
     // Interrupts
     log(LOG_START, "Enable Interrupts.");
     init_interrupts();
     log(LOG_END, "Enable Interrupts.");
     // Init finished
-    delay();  // test
     machine_info();
     *GPIO_SEG = 0x11223344;
     // Enter shell
-    test_();
     cpu_idle();                 // run idle process
     while (1)
         ;

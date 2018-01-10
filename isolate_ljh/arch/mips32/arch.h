@@ -3,7 +3,7 @@
 
 //	machine params
 
-#define MACHINE_MMSIZE 128 * 1024 * 1024     // 128MB
+#define MACHINE_MMSIZE 512 * 1024 * 1024     // 512MB
 #define MACHINE_SDSIZE 16 * 1024 * 1024 * 2  // 32M Sectors
 #define CHAR_VRAM_SIZE 128 * 32 * 4          // 128*32*4
 #define PAGE_TABLE_SIZE 256 * 1024           // 4MB

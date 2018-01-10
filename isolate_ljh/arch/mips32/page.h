@@ -1,6 +1,7 @@
 #ifndef _PAGE__H
 #define _PAGE__H
 
+void init_TLB();
 void init_pgtable();
 
 typedef struct {
