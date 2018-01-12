@@ -1,6 +1,6 @@
 #include <arch.h>
 #include <driver/vga.h>
-//#include <zjunix/mmu/mmu.h>
+#include <zjunix/mmu/mmu.h>
 #include <zjunix/buddy.h>
 #include <zjunix/slab.h>
 #include <zjunix/utils.h>

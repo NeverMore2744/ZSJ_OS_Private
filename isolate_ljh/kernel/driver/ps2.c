@@ -237,7 +237,7 @@ int kernel_getchar() {
     } while (key == -1);
 #ifdef PS2_DEBUG
     print_curr_char(key);
-#endif  // ! PS2_DEBUG
+#endif  // ! PS2_DEBUG  
     return key;
 }
 

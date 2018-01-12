@@ -4,10 +4,6 @@
 
 #include<zjunix/syscall.h>
 
-void init_syscall();
-void syscall(unsigned int status, unsigned int cause, context* pt_context);
-void register_syscall(int index, sys_fn fn);
-
 // 128: Change the interrupt vector
 void syscall_change_interrupt_vector(unsigned int status, unsigned int cause, context* pt_context);
 
@@ -16,7 +12,14 @@ void syscall_kill_process(unsigned int status, unsigned int cause, context* pt_c
 
 // 130: Change the foreground and background
 
+
 // 131: 
 void syscall_print_string(unsigned int status, unsigned int cause, context* pt_context);
+
+// 140: getchar
+void syscall_getchar(unsigned int status, unsigned int cause, context* pt_context);
+
+// 160: graphics
+void syscall_graphics(unsigned int status, unsigned int cause, context* pt_context);
 
 #endif

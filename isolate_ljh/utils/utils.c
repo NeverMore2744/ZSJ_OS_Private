@@ -35,7 +35,7 @@ void* kernel_memset(void* dest, int b, int len) {
 unsigned int* kernel_memset_bytes(unsigned char* dest, unsigned int w, int len) {
     while(len--) 
         *dest++ = w;
-    return dest;
+    return (unsigned int*)dest;
 }
 
 unsigned int* kernel_memset_word(unsigned int* dest, unsigned int w, int len) {

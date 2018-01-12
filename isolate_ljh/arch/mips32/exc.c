@@ -29,13 +29,6 @@ void do_exceptions(unsigned int status, unsigned int cause, context* pt_context)
     }
 }
 
-void init_exception_table() {
-    int i=0;
-    for (i=0; i<32; i++) exceptions[i] = NULL;
-    /* Init the refill exception function */
-    refill_exception = NULL;
-}
-
 void register_exception_handler(int index, exc_fn fn) {
     index &= 31;
     exceptions[index] = fn;
@@ -58,7 +51,7 @@ void do_refill(unsigned int status, unsigned int cause, context* pt_context) {
     } else {
         task_struct* pcb;
         unsigned int badVaddr;
-        asm volatile("mfc0 %0, $8\n\t" : "=r"(badVaddr));   // "=r": constrain
+        asm volatile("mfc0 %0, $8\n\t" :: "r"(badVaddr));   // "=r": constrain
                                                             // the gcc can chose reg %0 arbitarily, as long as the badVaddr is also using the same reg.
         pcb = get_curr_pcb();
         kernel_printf("\nProcess %s exited due to exception cause=%x;\n", pcb->name, cause);
