@@ -384,6 +384,10 @@ void *kmalloc(unsigned int size) {
 
     if (!size)
         return 0;
+    if (size > ((1 << PAGE_SHIFT) << MAX_BUDDY_ORDER)) {
+        kernel_printf("[kmalloc]The space you intend to allocate is too big!");
+        return 0;
+    }
 
     // if the size larger than the max size of slab system, then call buddy to
     // solve this

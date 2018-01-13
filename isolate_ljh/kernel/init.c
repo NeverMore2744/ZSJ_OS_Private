@@ -52,10 +52,9 @@ void create_startup_process() {
     pc_create(4, system_time_proc, (unsigned int)kmalloc(4096) + 4096, init_gp, "time");
     log(LOG_OK, "Timer init");
 }
-#pragma GCC pop_options
 
 
-void test() {
+void test_slab_and_buddy() {
     unsigned int* k1, *k2, *k3, *k4, *k5;
     unsigned int i=8, j=4;
     for (i=8; i<=4096; i+=j) {
@@ -96,30 +95,64 @@ void test_pgtable() {
     create_PDT_entry(127, 3, 0);
     kernel_printf("After create 2 entries:\n");
     pgtable_info();
-
-
 }
 
 void test_g() {
+    unsigned int regs_buff[10], regs2_buff[10];
+    unsigned int* regs_buff_ptr, *regs2_buff_ptr;
+    unsigned int* pic;
+    regs_buff_ptr = regs_buff;
+    regs2_buff_ptr = regs2_buff;
+    regs_buff[0] = 3;
+    //regs_buff[1] = (unsigned int)PIC_MONSTER;
+    regs_buff[1] = 0xf0f;
+    regs_buff[2] = (30 << 16) + 40;
+    regs_buff[3] = (40 << 16) + 50;
+
     cvt2Gmode();
     clear_black();
-    unsigned int i, j, k, w, h, ii, jj, num;
-    for (i=0; i<11; i++)
-        for (j=0; j<11; j++) {
-            num = get_tower_map(0, (j << 3) + (j << 2) - j + i);
-            //num = j&3;
-            w = 210 + (i << 5) - (i << 1);
-            h = 90 + (j << 5) - (j << 1);
-            for (ii = w; ii < w+30; ii++)
-                for (jj = h; jj < h+30; jj++) 
-                    print_pixel(ii, jj,  get_tower_pic(num, (ii-w) + ((jj-h) << 5) - ((jj-h) << 1)));
-        }
+    pic = get_mario_pic_ptr();
+    print_32b_bmp((unsigned char*)pic, 12054, -1, -1);
+    return;
+
+    regs_buff[0] = 3;
+    //regs_buff[1] = (unsigned int)PIC_MONSTER;
+    regs_buff[1] = 0xf0f;
+    regs_buff[2] = (30 << 16) + 40;
+    regs_buff[3] = (40 << 16) + 50;
+    kernel_printf("\n\n   ");
+    asm volatile(
+        "addu $sp, $sp, -20 \n\t"
+        "sw   $v0, 0($sp) \n\t"
+        "sw   $a0, 4($sp) \n\t"
+        "sw   $a1, 8($sp) \n\t"
+        "sw   $a2, 12($sp) \n\t"
+        "sw   $a3, 16($sp) \n\t"
+        "ori  $v0, $zero, 160 \n\t"
+        "lw   $a0, 0(%0) \n\t"
+        "lw   $a1, 4(%0) \n\t"
+        "lw   $a2, 8(%0) \n\t"
+        "lw   $a3, 12(%0) \n\t"
+        "syscall \n\t"
+        "nop \n\t"
+        "nop \n\t"
+        "lw   $v0, 0($sp) \n\t"
+        "lw   $a0, 4($sp) \n\t"
+        "lw   $a1, 8($sp) \n\t"
+        "lw   $a2, 12($sp) \n\t"
+        "lw   $a3, 16($sp) \n\t"
+        "addu $sp, $sp, 20 \n\t"
+        : "=r"(regs_buff_ptr)
+    );
+    kernel_printf("\n\n   ");
     return;
 }
 
-void test_mem(){
+#pragma GCC pop_options
+
+void test_buddy_mem(){
     bootmm_message();
-    unsigned int* k1, *k2, *k3, *k4, *k5;
+    unsigned int* k1, *k2, *k3, *k4, *k5, *k6, *k7, *k8, *k9;
     k1 = (unsigned int*)kmalloc(4096);
     buddy_info();
     k2 = (unsigned int*)kmalloc(4096);
@@ -128,11 +161,17 @@ void test_mem(){
     buddy_info();
     k4 = (unsigned int*)kmalloc(32769);
     buddy_info();
-    kernel_printf("  k1 = %x\n", k1);
-    kernel_printf("  k2 = %x\n", k2);
-    kernel_printf("  k3 = %x\n", k3);
-    kernel_printf("  k4 = %x\n", k4);
-    //buddy_info();
+    k5 = (unsigned int*)kmalloc(70000);
+    buddy_info();
+    k6 = (unsigned int*)kmalloc(140000);
+    buddy_info();
+    k7 = (unsigned int*)kmalloc(280000);
+    buddy_info();
+    k8 = (unsigned int*)kmalloc(560000);
+    buddy_info();
+    k9 = (unsigned int*)kmalloc(1200000);
+    buddy_info();
+    return;
     kernel_printf("  After free k1:\n");
     kfree(k1);
     buddy_info();
@@ -191,8 +230,6 @@ void init_kernel() {
     log(LOG_START, "MMU modules.");
     init_MMU();
     log(LOG_END, "MMU modules.");
-    test();
-    while(1) ;
     // Interrupts
     log(LOG_START, "Enable Interrupts.");
     init_interrupts();
@@ -200,6 +237,7 @@ void init_kernel() {
     // Init finished
     machine_info();
     *GPIO_SEG = 0x11223344;
+    test_g();
     // Enter shell
     cpu_idle();                 // run idle process
     while (1)

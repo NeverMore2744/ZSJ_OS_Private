@@ -16,6 +16,4 @@ void clear_black();
 // Convert to Graphics mode
 void cvt2Gmode();
 
-void print_32b_bmp(unsigned char* bmp_buffer, unsigned int len, unsigned int sx, unsigned int sy);
-
 #endif  // ___VGA_G__

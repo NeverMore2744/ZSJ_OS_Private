@@ -1,5 +1,7 @@
 #include <exc.h>
 #include <zjunix/syscall.h>
+#include <zjunix/mmu/usr_syscalls.h>
+#include <driver/vga.h>
 #include "syscall4.h"
 
 sys_fn syscalls[256];
@@ -11,6 +13,7 @@ void init_syscall() {
 
     // register all syscalls here
     register_syscall(4, syscall4);
+    init_usr_syscall();  // 140, 160
 }
 
 
@@ -19,6 +22,7 @@ void init_syscall() {
 void syscall(unsigned int status, unsigned int cause, context* pt_context) {
     unsigned int code;
     code = pt_context->v0;    //The code number is stored at $v0
+    kernel_printf("%x:\n  ", code);
     pt_context->epc += 4;
     if (syscalls[code]) {
         syscalls[code](status, cause, pt_context);   // call: syscall4 

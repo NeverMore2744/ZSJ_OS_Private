@@ -34,7 +34,7 @@ struct page {
  * pages(consequent) are free In current system, we allow the max order to be
  * 4(2^4 consequent free pages)
  */
-#define MAX_BUDDY_ORDER 4
+#define MAX_BUDDY_ORDER 9
 
 struct freelist {
     unsigned int nr_free;

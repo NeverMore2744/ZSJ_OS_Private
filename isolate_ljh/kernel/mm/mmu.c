@@ -78,12 +78,6 @@ void tlbwi(unsigned int index, unsigned int cp0EntryHi, unsigned int cp0EntryLo0
     );
     
 }
-/*
-void cvt2usr(unsigned int ASID) {
-    asm volatile(
-
-    );
-}*/
 
 // Use an array to store data, 
 // in order to avoid potential bugs

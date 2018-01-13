@@ -22,9 +22,10 @@ void buddy_info() {
     /*kernel_printf("Buddy-system :\n");
     kernel_printf("\tstart page-frame number : %x\n", buddy.buddy_start_pfn);
     kernel_printf("\tend page-frame number : %x\n", buddy.buddy_end_pfn);*/
+    kernel_printf("\n");
     for (index = 0; index <= MAX_BUDDY_ORDER; ++index) {
-        kernel_printf("\t(%x)# : %x frees     ", index, buddy.freelist[index].nr_free);
-        if (index % 3 == 2) kernel_printf("\n");
+        kernel_printf("  (%x)%x,", index, buddy.freelist[index].nr_free);
+        //if (index % 6 == 5) kernel_printf("\n");
     }
 }
 
@@ -77,7 +78,7 @@ void init_buddy() {
     }
     kernel_end_pfn >>= PAGE_SHIFT;
     // Start allocating after the final segment of bootmm
-    // #define MAX_BUDDY_ORDER 4
+    // #define MAX_BUDDY_ORDER 9
     // alignment
     buddy.buddy_start_pfn = (kernel_end_pfn + (1 << MAX_BUDDY_ORDER) - 1) &
                             ~((1 << MAX_BUDDY_ORDER) - 1);              // the pages that bootmm using cannot be merged into buddy_sys
