@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "*.asm": "asm",
+        "vga_g.h": "c",
+        "usr_syscalls.h": "c",
+        "mmu.h": "c",
+        "bootmm.h": "c",
+        "utils.h": "c",
+        "vga.h": "c",
+        "arch.h": "c",
+        "slab.h": "c",
+        "assert.h": "c",
+        "list.h": "c",
+        "unistd.h": "c",
+        "error.h": "c",
+        "defs.h": "c",
+        "buddy.h": "c",
+        "syscall.h": "c"
+    }
+}

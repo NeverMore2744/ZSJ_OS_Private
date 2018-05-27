@@ -1,0 +1,1342 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+PGT_BaseAddrs       0x400             kernel/mm/mmu.o
+interrupts          0x20              arch/mips32/intr.o
+kernel_start_pfn    0x4               kernel/mm/buddy.o
+dir_data_buf        0x820             kernel/fs/fat/fat.o
+cursor_col          0x4               kernel/driver/vga.o
+cursor_location     0x4               usr/myvi.o
+bootmmmap           0x20000           kernel/mm/bootmm.o
+fat_info            0x418             kernel/fs/fat/fat.o
+kernel_printf_lock  0xc               kernel/driver/vga.o
+file_create         0x4150            kernel/fs/fat/usr.o
+is_new_file         0x4               usr/myvi.o
+bmm                 0x90              kernel/mm/bootmm.o
+cursor_row          0x4               kernel/driver/vga.o
+page_end            0x4               usr/myvi.o
+filename            0x4               usr/myvi.o
+ps_buffer_index     0x4               usr/ps.o
+file                0x4150            usr/exec.o
+PAGE_BUFFER         0xa054            kernel/fs/fscache/fscache.o
+firstusercode_start
+                    0x4               kernel/mm/bootmm.o
+filename11          0xd               kernel/fs/fat/fat.o
+Filetable           0x28              kernel/fs/fat/file.o
+mode                0x4               usr/myvi.o
+refill_exception    0x4               arch/mips32/exc.o
+buffer              0x1000            usr/myvi.o
+root                0x4               kernel/fs/fat/vfs.o
+mk_dir_buf          0x20              kernel/fs/fat/usr.o
+slab_lock           0xc               kernel/mm/slab.o
+err                 0x4               usr/myvi.o
+new_alloc_empty     0x1000            kernel/fs/fat/fat.o
+pre_cursor_freq     0x4               usr/myvi.o
+pcb                 0xd40             kernel/pc/pc.o
+exceptions          0x80              arch/mips32/exc.o
+kernel_end_pfn      0x4               kernel/mm/buddy.o
+buddy               0x9c              kernel/mm/buddy.o
+firstusercode_len   0x4               kernel/mm/bootmm.o
+dir_find            0x4150            kernel/fs/fat/dir.o
+fat_buf             0x410             kernel/fs/fat/fat.o
+pages               0x4               kernel/mm/buddy.o
+kmalloc_caches      0x1e0             kernel/mm/slab.o
+ps_buffer           0x40              usr/ps.o
+
+Discarded input sections
+
+ .reginfo       0x0000000000000000       0x18 arch/mips32/start.o
+ .reginfo       0x0000000000000000       0x18 arch/mips32/arch.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 arch/mips32/arch.o
+ .reginfo       0x0000000000000000       0x18 arch/mips32/exc.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 arch/mips32/exc.o
+ .reginfo       0x0000000000000000       0x18 arch/mips32/intr.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 arch/mips32/intr.o
+ .reginfo       0x0000000000000000       0x18 arch/mips32/page.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 arch/mips32/page.o
+ .reginfo       0x0000000000000000       0x18 kernel/driver/ps2.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/driver/ps2.o
+ .reginfo       0x0000000000000000       0x18 kernel/driver/sd.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/driver/sd.o
+ .reginfo       0x0000000000000000       0x18 kernel/driver/vga.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/driver/vga.o
+ .reginfo       0x0000000000000000       0x18 kernel/driver/vga_graphics.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/driver/vga_graphics.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/debug.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/debug.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/dir.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/dir.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/fat.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/fat.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/file.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/file.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/usr.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/usr.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/utils.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/utils.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fat/vfs.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fat/vfs.o
+ .reginfo       0x0000000000000000       0x18 kernel/fs/fscache/fscache.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/fs/fscache/fscache.o
+ .reginfo       0x0000000000000000       0x18 kernel/init.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/init.o
+ .reginfo       0x0000000000000000       0x18 kernel/lock/lock.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/lock/lock.o
+ .reginfo       0x0000000000000000       0x18 kernel/mm/bootmm.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/mm/bootmm.o
+ .reginfo       0x0000000000000000       0x18 kernel/mm/buddy.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/mm/buddy.o
+ .reginfo       0x0000000000000000       0x18 kernel/mm/mmu.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/mm/mmu.o
+ .reginfo       0x0000000000000000       0x18 kernel/mm/slab.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/mm/slab.o
+ .reginfo       0x0000000000000000       0x18 kernel/pc/pc.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/pc/pc.o
+ .reginfo       0x0000000000000000       0x18 kernel/schedule/sched.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/schedule/sched.o
+ .reginfo       0x0000000000000000       0x18 kernel/syncronization/diningphilosophers.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syncronization/diningphilosophers.o
+ .reginfo       0x0000000000000000       0x18 kernel/syncronization/semaphore.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syncronization/semaphore.o
+ .reginfo       0x0000000000000000       0x18 kernel/syncronization/truesemtest.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syncronization/truesemtest.o
+ .reginfo       0x0000000000000000       0x18 kernel/syscall/syscall.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syscall/syscall.o
+ .reginfo       0x0000000000000000       0x18 kernel/syscall/syscall4.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syscall/syscall4.o
+ .reginfo       0x0000000000000000       0x18 kernel/syscall/usr_syscalls.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/syscall/usr_syscalls.o
+ .reginfo       0x0000000000000000       0x18 kernel/time/time.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 kernel/time/time.o
+ .reginfo       0x0000000000000000       0x18 utils/assert.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 utils/assert.o
+ .reginfo       0x0000000000000000       0x18 utils/log.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 utils/log.o
+ .reginfo       0x0000000000000000       0x18 utils/utils.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 utils/utils.o
+ .reginfo       0x0000000000000000       0x18 usr/exec.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/exec.o
+ .reginfo       0x0000000000000000       0x18 usr/ls.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/ls.o
+ .reginfo       0x0000000000000000       0x18 usr/myvi.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/myvi.o
+ .reginfo       0x0000000000000000       0x18 usr/ps.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/ps.o
+ .reginfo       0x0000000000000000       0x18 usr/showimg.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/showimg.o
+ .reginfo       0x0000000000000000       0x18 usr/test.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 usr/test.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000080020000                . = 0x80020000
+
+.interp
+ *(.interp)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.dyn        0x0000000080020000        0x0
+ .rel.dyn       0x0000000080020000        0x0 kernel/fs/fat/fat.o
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.sdata
+ *(.rel.sdata)
+ *(.rel.sdata1)
+ *(.rel.sdata.*)
+ *(.rel.gnu.linkonce.s*)
+
+.rela.sdata
+ *(.rela.sdata)
+ *(.rela.sdata1)
+ *(.rela.sdata.*)
+ *(.rela.gnu.linkonce.s*)
+
+.rel.sbss
+ *(.rel.sbss)
+
+.rela.sbss
+ *(.rela.sbss)
+
+.rel.sdata2
+ *(.rel.sdata2)
+
+.rela.sdata2
+ *(.rela.sdata2)
+
+.rel.sbss2
+ *(.rel.sbss2)
+
+.rela.sbss2
+ *(.rela.sbss2)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.plt
+ *(.plt)
+                0x0000000080000000                . = 0x80000000
+
+.text           0x0000000080000000    0x189fc
+                0x0000000080000000                _ftext = .
+ *(.text)
+ .text          0x0000000080000000     0x1014 arch/mips32/start.o
+                0x0000000080000000                exception
+                0x0000000080001000                start
+ .text          0x0000000080001014       0x24 arch/mips32/arch.o
+                0x0000000080001014                get_phymm_size
+ .text          0x0000000080001038      0x290 arch/mips32/exc.o
+                0x0000000080001038                do_exceptions
+                0x000000008000114c                register_exception_handler
+                0x000000008000119c                init_exception
+                0x00000000800011c8                do_refill
+                0x000000008000129c                register_refill_exception_handler
+ .text          0x00000000800012c8      0x1f4 arch/mips32/intr.o
+                0x00000000800012c8                init_interrupts
+                0x00000000800012fc                enable_interrupts
+                0x0000000080001338                disable_interrupts
+                0x0000000080001378                do_interrupts
+                0x0000000080001448                register_interrupt_handler
+ .text          0x00000000800014bc       0x50 arch/mips32/page.o
+                0x00000000800014bc                init_pgtable
+ .text          0x000000008000150c      0x5c4 kernel/driver/ps2.o
+                0x000000008000150c                init_buffer
+                0x0000000080001590                init_ps2
+                0x00000000800015e8                ps2_handler
+                0x00000000800018e0                kernel_getkey
+                0x0000000080001990                kernel_scantoascii
+                0x0000000080001a34                sleep
+                0x0000000080001a70                kernel_getchar
+ .text          0x0000000080001ad0      0x488 kernel/driver/sd.o
+                0x0000000080001b80                sd_read_sector_blocking
+                0x0000000080001cb4                sd_write_sector_blocking
+                0x0000000080001df0                sd_read_block
+                0x0000000080001ea4                sd_write_block
+ .text          0x0000000080001f58      0x9c0 kernel/driver/vga.o
+                0x0000000080001f58                kernel_set_cursor
+                0x0000000080001fa8                init_vga
+                0x0000000080002008                kernel_clear_screen
+                0x000000008000207c                kernel_scroll_screen
+                0x000000008000211c                kernel_putchar_at
+                0x00000000800021bc                kernel_putchar
+                0x00000000800023a8                kernel_puts
+                0x000000008000242c                kernel_putint
+                0x0000000080002588                kernel_putintx
+                0x0000000080002658                kernel_vprintf
+                0x0000000080002894                kernel_printf
+ .text          0x0000000080002918      0x800 kernel/driver/vga_graphics.o
+                0x0000000080002918                print_pixel
+                0x00000000800029a4                cvt2Gmode
+                0x00000000800029d0                cvt2Tmode
+                0x00000000800029f8                print_rectangle
+                0x0000000080002adc                init_vga_graphics
+                0x0000000080002b14                clear_graphics
+                0x0000000080002bac                clear_black
+                0x0000000080002be8                print_pure_picture
+                0x0000000080002ce4                get4bytes
+                0x0000000080002d74                get2bytes
+                0x0000000080002dc8                get1byte
+                0x0000000080002e00                print_32b_bmp
+ .text          0x0000000080003118      0x144 kernel/fs/fat/debug.o
+                0x0000000080003118                dump_bpb_info
+                0x0000000080003188                dump_fat_info
+ .text          0x000000008000325c      0x610 kernel/fs/fat/dir.o
+                0x000000008000325c                fs_open_dir
+                0x00000000800034a8                fs_read_dir
+ .text          0x000000008000386c     0x4e88 kernel/fs/fat/fat.o
+                0x00000000800038a8                init_fat_info
+                0x0000000080003ba0                init_fat_buf
+                0x0000000080003c30                init_dir_buf
+                0x0000000080003cc0                init_page_buf
+                0x0000000080003d50                init_fs
+                0x0000000080003dd0                write_fat_sector
+                0x0000000080003f88                read_fat_sector
+                0x0000000080004144                fs_next_slash
+                0x00000000800043d8                fs_cmp_filename
+                0x0000000080004460                fs_find
+                0x0000000080004940                fs_open
+                0x0000000080004acc                fs_fflush
+                0x0000000080004c30                fs_close
+                0x0000000080004dc4                fs_read
+                0x0000000080005178                fs_next_free
+                0x0000000080005248                fs_alloc
+                0x0000000080005414                fs_write
+                0x0000000080005a1c                fs_lseek
+                0x0000000080005a84                fs_find_empty_entry
+                0x0000000080005dd8                fs_create_with_attr
+                0x0000000080006218                fs_create
+                0x0000000080006254                fat_fs_open
+                0x00000000800062c4                fat_fs_write
+                0x0000000080006548                fat_fs_write_by_page
+                0x00000000800066b0                fat_fs_read
+                0x0000000080006824                fat_fs_read_page
+                0x000000008000692c                fat_fs_mount
+                0x0000000080006a9c                vfs_to_fat_attributes
+                0x0000000080006b58                fat_fs_next_free
+                0x0000000080006c28                fat_fs_alloc
+                0x0000000080006ddc                get_filename
+                0x0000000080007084                fat_fs_read_directory
+                0x0000000080007690                fat_fs_read_by_data_cluster
+                0x0000000080007708                fat_fs_get_short_name
+                0x0000000080007874                fat_to_vfs_attr
+                0x000000008000790c                fat_fs_get_entry_data_cluster
+                0x0000000080007968                fat_fs_close
+                0x000000008000798c                fat_fs_validate_83_name
+                0x0000000080007b58                fat_fs_find_empty_entry
+                0x0000000080007da4                fat_fs_generate_short_name
+                0x0000000080007f94                fat_fs_create_short_entry_from_node
+                0x00000000800081d0                fat_fs_create_node
+                0x0000000080008468                fat_fs_sync
+                0x0000000080008498                fat_fs_lookup
+                0x00000000800084c4                fat_fs_flush
+                0x0000000080008568                fat_fs_initialize_directory
+ .text          0x00000000800086f4      0x6b0 kernel/fs/fat/file.o
+                0x00000000800086f4                allocatefd
+                0x0000000080008768                file_init
+                0x0000000080008a84                open
+                0x0000000080008c04                read
+                0x0000000080008c8c                write
+                0x0000000080008d14                close
+ .text          0x0000000080008da4      0x988 kernel/fs/fat/usr.o
+                0x0000000080008da4                fs_rm
+                0x0000000080008ee0                fs_mv
+                0x00000000800090e4                fs_mkdir
+                0x0000000080009478                fs_cat
+                0x00000000800095e8                writetest
+ .text          0x000000008000972c      0x774 kernel/fs/fat/utils.o
+                0x000000008000972c                read_block
+                0x0000000080009774                write_block
+                0x00000000800097bc                get_u16
+                0x000000008000980c                get_u32
+                0x0000000080009878                set_u16
+                0x00000000800098d0                set_u32
+                0x0000000080009950                fs_wa
+                0x00000000800099ac                get_entry_filesize
+                0x00000000800099ec                get_entry_attr
+                0x0000000080009a1c                get_start_cluster
+                0x0000000080009a58                get_entry_start_cluster
+                0x0000000080009abc                get_fat_entry_value
+                0x0000000080009b88                fs_modify_fat
+                0x0000000080009cc0                cluster_to_fat_entry
+                0x0000000080009d38                fs_dataclus2sec
+                0x0000000080009da0                fs_sec2dataclus
+                0x0000000080009e08                clus2sec
+                0x0000000080009e6c                memset
+ .text          0x0000000080009ea0      0xf50 kernel/fs/fat/vfs.o
+                0x0000000080009fb0                vfs_init
+                0x000000008000a228                vfs_create_node
+                0x000000008000a3d4                vfs_root_lookup
+                0x000000008000a420                vfs_lookup
+                0x000000008000a474                vfs_get_root
+                0x000000008000a498                vfs_add_child
+                0x000000008000a4f4                vfs_default_read
+                0x000000008000a524                vfs_default_write
+                0x000000008000a554                vfs_default_sync
+                0x000000008000a584                vfs_default_open
+                0x000000008000a5ac                vfs_default_lookup
+                0x000000008000a5d8                test_vfs
+                0x000000008000a904                vfs_get_dev
+                0x000000008000a944                vfs_find_child
+                0x000000008000a9e0                vfs_create_device
+                0x000000008000aa90                vfs_find_relative_node
+                0x000000008000ac04                vfs_get_parent
+                0x000000008000ac48                vfs_find_node
+                0x000000008000ac8c                vfs_stdin_read
+                0x000000008000acbc                vfs_stdout_write
+                0x000000008000ad54                vfs_stderr_write
+ .text          0x000000008000adf0      0xd88 kernel/fs/fscache/fscache.o
+                0x000000008000adf0                fs_victim_4k
+                0x000000008000b01c                fs_write_4k
+                0x000000008000b0d0                fs_read_4k
+                0x000000008000b2bc                fs_clr_4k
+                0x000000008000b3f0                fs_victim_512
+                0x000000008000b61c                fs_write_512
+                0x000000008000b6c8                fs_read_512
+                0x000000008000b8a4                fs_clr_512
+                0x000000008000b9c4                fs_clear_clus
+                0x000000008000bab4                fat_fs_write_4k
+ .text          0x000000008000bb78      0x3e0 kernel/init.o
+                0x000000008000bb78                machine_info
+                0x000000008000bc00                create_startup_process
+                0x000000008000bccc                sleep2
+                0x000000008000bd08                init_kernel
+ .text          0x000000008000bf58      0x15c kernel/lock/lock.o
+                0x000000008000bf94                init_lock
+                0x000000008000bfdc                lockup
+                0x000000008000c04c                unlock
+ .text          0x000000008000c0b4     0x11ec kernel/mm/bootmm.o
+                0x000000008000c0b4                bootmm_message
+                0x000000008000c25c                set_mminfo
+                0x000000008000c2b0                pushback_mminfo
+                0x000000008000c360                move_mminfo
+                0x000000008000c4a4                insert_mminfo_no_lapped
+                0x000000008000c73c                insert_mminfo
+                0x000000008000c9fc                split_mminfo
+                0x000000008000cbbc                remove_mminfo
+                0x000000008000ccb8                init_bootmm
+                0x000000008000ce04                set_maps
+                0x000000008000ce7c                find_pages
+                0x000000008000d038                bootmm_alloc_pages
+                0x000000008000d18c                bootmap_info
+ .text          0x000000008000d2a0      0xc98 kernel/mm/buddy.o
+                0x000000008000d458                buddy_info
+                0x000000008000d52c                init_pages
+                0x000000008000d670                init_buddy
+                0x000000008000d928                __free_pages
+                0x000000008000dbf0                __alloc_pages
+                0x000000008000ddf0                alloc_pages
+                0x000000008000de64                siz2bplevel
+                0x000000008000ded8                free_pages
+ .text          0x000000008000df38     0x1744 kernel/mm/mmu.o
+                0x000000008000df38                init_TLB
+                0x000000008000df88                tlbwi
+                0x000000008000e014                read_TLB
+                0x000000008000e0bc                TLB_info
+                0x000000008000e168                pgtable_info
+                0x000000008000e3f8                insert_new_tlb_entry
+                0x000000008000e834                TLBMiss_refill_exception
+                0x000000008000e910                TLBMiss_Invalid_exception
+                0x000000008000e9e0                TLBModified_exception
+                0x000000008000eacc                init_MMU
+                0x000000008000eb80                create_PGT
+                0x000000008000ec78                create_PDT
+                0x000000008000edb0                delete_PGT
+                0x000000008000ee80                release_PGT_entry
+                0x000000008000ef58                delete_PDT
+                0x000000008000f000                release_PDT_entry
+                0x000000008000f13c                create_PDT_entry
+                0x000000008000f344                Set_valid
+                0x000000008000f4e0                Set_dirty
+ .text          0x000000008000f67c     0x12d8 kernel/mm/slab.o
+                0x000000008000f834                each_slab_info
+                0x000000008000f930                slab_info
+                0x000000008000f9a8                cache_node_info
+                0x000000008000faa8                show_slab_page
+                0x000000008000fd14                init_kmem_cpu
+                0x000000008000fd48                init_kmem_node
+                0x000000008000fd98                move_node
+                0x000000008000fe10                init_each_slab
+                0x000000008000fed4                init_slab
+                0x000000008000ffa4                format_slabpage
+                0x0000000080010104                slab_alloc
+                0x0000000080010388                slab_free
+                0x0000000080010670                get_slab
+                0x0000000080010768                kmalloc
+                0x0000000080010890                kfree
+ .text          0x0000000080010954     0x1448 kernel/pc/pc.o
+                0x0000000080010954                copy_context
+                0x0000000080010ce4                initializePCB
+                0x0000000080010fec                init_pc
+                0x0000000080011338                pc_schedule
+                0x0000000080011380                pc_peek
+                0x0000000080011438                pc_create
+                0x0000000080011678                pc_kill_syscall
+                0x00000000800116f4                pc_kill
+                0x00000000800117cc                get_curr_pcb
+                0x0000000080011808                print_proc
+                0x00000000800118f4                cpu_idle
+                0x0000000080011908                deadLoop_for_returned_process
+                0x0000000080011938                kernel_thread
+                0x00000000800119c8                do_fork
+ .text          0x0000000080011d9c      0xdd4 kernel/schedule/sched.o
+                0x0000000080011d9c                sched_class_enqueue
+                0x0000000080011ddc                pc_re_schedule_syscall
+                0x0000000080011e28                scheduler_schedule
+                0x00000000800121a0                MLFQ_queue_enque
+                0x00000000800122e4                MLFQ_queue_deque
+                0x0000000080012728                MLFQ_all_queues_init
+                0x00000000800128ac                sched_init
+                0x00000000800128e4                MLFQ_enqueue_first_time
+                0x00000000800129a0                MLFQ_enqueue_second_time
+                0x0000000080012a4c                MLFQ_dequeue
+ .text          0x0000000080012b70      0xa18 kernel/syncronization/diningphilosophers.o
+                0x0000000080013394                check_sync
+ .text          0x0000000080013588     0x1390 kernel/syncronization/semaphore.o
+                0x0000000080013588                sem_init
+                0x00000000800136bc                up
+                0x00000000800138b0                wakeup_wait
+                0x00000000800139d8                re_schedule
+                0x0000000080013a10                down
+                0x0000000080013c7c                wait_current_del
+                0x0000000080013ce8                wait_queue_first_del
+                0x0000000080014058                wait_queue_del
+                0x0000000080014428                wait_current_set
+                0x00000000800146bc                sem_print_wait_queues
+ .text          0x0000000080014918      0x670 kernel/syncronization/truesemtest.o
+                0x0000000080014da8                true_sem_check_sync
+ .text          0x0000000080014f88       0xdc kernel/syscall/syscall.o
+                0x0000000080014f88                init_syscall
+                0x0000000080014fc4                syscall
+ .text          0x0000000080015064       0x54 kernel/syscall/syscall4.o
+                0x0000000080015064                syscall4
+ .text          0x00000000800150b8      0x224 kernel/syscall/usr_syscalls.o
+                0x00000000800150b8                syscall_getchar
+                0x0000000080015108                syscall_graphics
+ .text          0x00000000800152dc      0x4bc kernel/time/time.o
+                0x00000000800152dc                get_time_string
+                0x0000000080015608                system_time_proc
+                0x0000000080015714                get_time
+ .text          0x0000000080015798       0x5c utils/assert.o
+                0x0000000080015798                assert
+ .text          0x00000000800157f4      0x268 utils/log.o
+                0x00000000800157f4                log_level_adv
+                0x0000000080015830                log_level_rec
+                0x0000000080015868                log
+                0x00000000800159e8                step
+                0x0000000080015a38                step_reset
+ .text          0x0000000080015a5c      0x3f0 utils/utils.o
+                0x0000000080015a5c                kernel_memcpy
+                0x0000000080015ae0                kernel_memset
+                0x0000000080015b14                kernel_memset_word
+                0x0000000080015b74                kernel_strcmp
+                0x0000000080015bfc                kernel_strcpy
+                0x0000000080015c58                pow
+                0x0000000080015cd4                kernel_cache
+                0x0000000080015d24                kernel_serial_puts
+                0x0000000080015d7c                kernel_serial_putc
+                0x0000000080015db4                is_bound
+                0x0000000080015df4                kernel_strlen
+ .text          0x0000000080015e4c      0x1c4 usr/exec.o
+                0x0000000080015e4c                exec
+ .text          0x0000000080016010      0x3c0 usr/ls.o
+                0x000000008001603c                cut_front_blank
+                0x0000000080016110                strlen
+                0x0000000080016168                each_param
+                0x0000000080016228                ls
+ .text          0x00000000800163d0     0x122c usr/myvi.o
+                0x00000000800163d0                myvi_init
+                0x000000008001644c                to_lower_case
+                0x00000000800164ac                mystrcpy
+                0x0000000080016508                load_file
+                0x00000000800166a0                save_file
+                0x0000000080016748                insert_key
+                0x0000000080016818                delete_key
+                0x00000000800168ac                put_char_on_screen
+                0x0000000080016918                screen_flush
+                0x0000000080016d20                get_key
+                0x0000000080016d54                page_location_last_line
+                0x0000000080016df0                page_location_next_line
+                0x0000000080016e84                cursor_prev_line
+                0x0000000080016f58                cursor_next_line
+                0x0000000080016ff0                do_command_mode
+                0x000000008001720c                do_insert_mode
+                0x0000000080017320                do_last_line_mode
+                0x00000000800174cc                myvi
+ .text          0x00000000800175fc      0xc58 usr/ps.o
+                0x00000000800175fc                test_proc
+                0x0000000080017670                proc_demo_create
+                0x000000008001771c                ps
+                0x00000000800178e8                parse_cmd
+ .text          0x0000000080018254      0x338 usr/showimg.o
+                0x0000000080018254                img_cut_front_blank
+                0x0000000080018328                img_strlen
+                0x0000000080018380                img_each_param
+                0x0000000080018440                showimg
+ .text          0x000000008001858c      0x470 usr/test.o
+                0x000000008001858c                test_slab_and_buddy
+                0x00000000800188ac                test_pgtable
+                0x0000000080018968                test_g
+ *(.text.*)
+ *(.stub)
+ *(.gnu.warning)
+ *(.gnu.linkonce.t*)
+ *(.mips16.fn.*)
+ *(.mips16.call.*)
+                0x00000000800189fc                _ecode = .
+
+.init
+ *(.init)
+
+.fini
+ *(.fini)
+
+.rodata         0x00000000800189fc     0x31c4
+ *(.rodata)
+ .rodata        0x00000000800189fc       0x50 arch/mips32/exc.o
+ .rodata        0x0000000080018a4c       0x14 kernel/driver/vga.o
+ .rodata        0x0000000080018a60       0x70 kernel/driver/vga_graphics.o
+ .rodata        0x0000000080018ad0       0xb0 kernel/fs/fat/debug.o
+ .rodata        0x0000000080018b80      0x204 kernel/fs/fat/fat.o
+ .rodata        0x0000000080018d84       0x60 kernel/fs/fat/file.o
+ .rodata        0x0000000080018de4       0x24 kernel/fs/fat/usr.o
+ .rodata        0x0000000080018e08      0x264 kernel/fs/fat/vfs.o
+ .rodata        0x000000008001906c      0x128 kernel/init.o
+ .rodata        0x0000000080019194      0x12c kernel/mm/bootmm.o
+ .rodata        0x00000000800192c0       0x5c kernel/mm/buddy.o
+ .rodata        0x000000008001931c      0x29c kernel/mm/mmu.o
+ .rodata        0x00000000800195b8      0x1c4 kernel/mm/slab.o
+ .rodata        0x000000008001977c      0x3cc kernel/pc/pc.o
+ .rodata        0x0000000080019b48      0x490 kernel/schedule/sched.o
+ .rodata        0x0000000080019fd8      0x3cc kernel/syncronization/diningphilosophers.o
+ .rodata        0x000000008001a3a4      0xcc0 kernel/syncronization/semaphore.o
+ .rodata        0x000000008001b064      0x48c kernel/syncronization/truesemtest.o
+ .rodata        0x000000008001b4f0       0x14 kernel/syscall/usr_syscalls.o
+ .rodata        0x000000008001b504       0x40 kernel/time/time.o
+ .rodata        0x000000008001b544       0x14 utils/assert.o
+ .rodata        0x000000008001b558       0x78 utils/log.o
+ .rodata        0x000000008001b5d0       0x14 usr/exec.o
+ .rodata        0x000000008001b5e4       0x34 usr/ls.o
+ .rodata        0x000000008001b618       0xfc usr/myvi.o
+ .rodata        0x000000008001b714      0x33c usr/ps.o
+ .rodata        0x000000008001ba50       0x34 usr/showimg.o
+ .rodata        0x000000008001ba84      0x13c usr/test.o
+ *(.rodata.*)
+ *(.gnu.linkonce.r*)
+
+.MIPS.abiflags  0x000000008001bbc0       0x18
+ .MIPS.abiflags
+                0x000000008001bbc0       0x18 arch/mips32/start.o
+
+.rodata1
+ *(.rodata1)
+
+.sdata2
+ *(.sdata2)
+
+.sbss2
+ *(.sbss2)
+
+.sdeinit
+ *(.sdeinit)
+
+.sdefini
+ *(.sdefini)
+
+.eh_frame
+ *(.eh_frame)
+
+.gcc_except_table
+ *(.gcc_except_table)
+
+.ctors
+ *crt0.o(.ctors)
+ *crtbegin.o(.ctors)
+ *crtbeginS.o(.ctors)
+ *(EXCLUDE_FILE(*crtn.o *crtendS.o *crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ *(.ctors)
+
+.dtors
+ *crt0.o(.dtors)
+ *crtbegin.o(.dtors)
+ *crtbeginS.o(.dtors)
+ *(EXCLUDE_FILE(*crtn.o *crtendS.o *crtend.o) .dtors)
+ *(SORT(.dtors.*))
+ *(.dtors)
+
+.dynamic
+ *(.dynamic)
+
+.dynsym
+ *(.dynsym)
+
+.hash
+ *(.hash)
+
+.dynstr
+ *(.dynstr)
+                0x000000008001bbd8                __etext = .
+                0x000000008001bbd8                _etext = .
+                0x000000008001bbd8                PROVIDE (etext, .)
+                0x000000008001bbd8                . = ALIGN (0x8)
+
+.data           0x000000008001bbd8     0x4d50
+                0x000000008001bbd8                _fdata = .
+ *(.data)
+ .data          0x000000008001bbd8        0x0 arch/mips32/start.o
+ .data          0x000000008001bbd8        0x0 arch/mips32/arch.o
+ .data          0x000000008001bbd8        0x0 arch/mips32/exc.o
+ .data          0x000000008001bbd8        0x0 arch/mips32/intr.o
+ .data          0x000000008001bbd8        0x0 arch/mips32/page.o
+ .data          0x000000008001bbd8      0x100 kernel/driver/ps2.o
+                0x000000008001bbd8                scantoascii_uppercase
+                0x000000008001bc58                scantoascii_lowercase
+ .data          0x000000008001bcd8        0x0 kernel/driver/sd.o
+ .data          0x000000008001bcd8        0x0 kernel/driver/vga.o
+ .data          0x000000008001bcd8        0x0 kernel/driver/vga_graphics.o
+ .data          0x000000008001bcd8        0x0 kernel/fs/fat/debug.o
+ .data          0x000000008001bcd8        0x0 kernel/fs/fat/dir.o
+ .data          0x000000008001bcd8       0x1c kernel/fs/fat/fat.o
+ .data          0x000000008001bcf4        0x0 kernel/fs/fat/file.o
+ .data          0x000000008001bcf4        0x0 kernel/fs/fat/usr.o
+ .data          0x000000008001bcf4        0x0 kernel/fs/fat/utils.o
+ .data          0x000000008001bcf4       0x70 kernel/fs/fat/vfs.o
+ .data          0x000000008001bd64        0x0 kernel/fs/fscache/fscache.o
+ .data          0x000000008001bd64        0x0 kernel/init.o
+ .data          0x000000008001bd64        0x0 kernel/lock/lock.o
+ .data          0x000000008001bd64       0x1c kernel/mm/bootmm.o
+                0x000000008001bd64                mem_msg
+ .data          0x000000008001bd80        0x0 kernel/mm/buddy.o
+ .data          0x000000008001bd80        0x0 kernel/mm/mmu.o
+ .data          0x000000008001bd80       0x90 kernel/mm/slab.o
+ .data          0x000000008001be10        0x0 kernel/pc/pc.o
+ .data          0x000000008001be10        0x0 kernel/schedule/sched.o
+ .data          0x000000008001be10       0xc0 kernel/syncronization/diningphilosophers.o
+ .data          0x000000008001bed0        0x0 kernel/syncronization/semaphore.o
+ .data          0x000000008001bed0       0xc0 kernel/syncronization/truesemtest.o
+ .data          0x000000008001bf90      0x284 kernel/syscall/syscall.o
+ .data          0x000000008001c214        0x0 kernel/syscall/syscall4.o
+ .data          0x000000008001c214        0x0 kernel/syscall/usr_syscalls.o
+ .data          0x000000008001c214        0x0 kernel/time/time.o
+ .data          0x000000008001c214        0x0 utils/assert.o
+ .data          0x000000008001c214        0x0 utils/log.o
+ .data          0x000000008001c214        0x0 utils/utils.o
+ .data          0x000000008001c214        0x0 usr/exec.o
+ .data          0x000000008001c214        0x0 usr/ls.o
+ .data          0x000000008001c214        0x0 usr/myvi.o
+ .data          0x000000008001c214        0x0 usr/ps.o
+ .data          0x000000008001c214        0x0 usr/showimg.o
+ .data          0x000000008001c214     0x4714 usr/test.o
+ *(.data.*)
+ *(.gnu.linkonce.d*)
+
+.data1
+ *(.data1)
+                0x0000000080028920                _gp = (ALIGN (0x10) + 0x7ff0)
+
+.got
+ *(.got.plt)
+ *(.got)
+
+.sdata          0x0000000080020928       0x70
+ *(.sdata)
+ .sdata         0x0000000080020928       0x34 arch/mips32/arch.o
+                0x0000000080020928                CHAR_VRAM
+                0x000000008002092c                GRAPHIC_VRAM
+                0x0000000080020930                GPIO_SWITCH
+                0x0000000080020934                GPIO_BUTTON
+                0x0000000080020938                GPIO_SEG
+                0x000000008002093c                GPIO_LED
+                0x0000000080020940                GPIO_PS2_DATA
+                0x0000000080020944                GPIO_PS2_CTRL
+                0x0000000080020948                GPIO_UART_DATA
+                0x000000008002094c                GPIO_UART_CTRL
+                0x0000000080020950                GPIO_CURSOR
+                0x0000000080020954                VGA_MODE
+                0x0000000080020958                kernel_sp
+ .sdata         0x000000008002095c        0x4 kernel/driver/ps2.o
+ .sdata         0x0000000080020960        0x8 kernel/driver/sd.o
+ .sdata         0x0000000080020968       0x18 kernel/driver/vga.o
+                0x0000000080020968                VGA_CHAR_MAX_ROW
+                0x000000008002096c                VGA_CHAR_MAX_COL
+                0x0000000080020970                VGA_CHAR_ROW
+                0x0000000080020974                VGA_CHAR_COL
+                0x0000000080020978                cursor_freq
+ .sdata         0x0000000080020980        0xc kernel/pc/pc.o
+                0x0000000080020980                curr_proc
+                0x0000000080020984                idleproc
+                0x0000000080020988                initproc
+ .sdata         0x000000008002098c        0x8 kernel/syncronization/truesemtest.o
+ .sdata         0x0000000080020994        0x4 usr/exec.o
+                0x0000000080020994                CACHE_BLOCK_SIZE
+ *(.sdata1)
+ *(.sdata.*)
+ *(.gnu.linkonce.s.*)
+
+.lit8
+ *(.lit8)
+
+.lit4
+ *(.lit4)
+                0x0000000080020998                . = ALIGN (0x8)
+                0x0000000080020998                _edata = .
+                0x0000000080020998                PROVIDE (edata, .)
+                0x0000000080020998                __bss_start = .
+                0x0000000080020998                PROVIDE (__edata, .)
+                0x0000000080020998                _fbss = .
+
+.sbss           0x0000000080020998       0x7c
+                0x0000000080020998                __sbss_start = .
+                0x0000000080020998                ___sbss_start = .
+ *(.dynsbss)
+ *(.sbss)
+ .sbss          0x0000000080020998       0x14 kernel/driver/ps2.o
+ .sbss          0x00000000800209ac        0x8 kernel/fs/fat/fat.o
+                0x00000000800209ac                fat_clock_head
+                0x00000000800209b0                dir_data_clock_head
+ .sbss          0x00000000800209b4        0x8 kernel/pc/pc.o
+                0x00000000800209b4                init_gp
+ .sbss          0x00000000800209bc        0x8 utils/log.o
+                0x00000000800209bc                gstep
+ .sbss          0x00000000800209c4        0xc usr/myvi.o
+                0x00000000800209c4                inst_len
+                0x00000000800209c8                size
+                0x00000000800209cc                page_location
+ *(.sbss.*)
+ *(.scommon)
+ .scommon       0x00000000800209d0        0x4 arch/mips32/exc.o
+                0x00000000800209d0                refill_exception
+ .scommon       0x00000000800209d4        0x8 kernel/driver/vga.o
+                0x00000000800209d4                cursor_col
+                0x00000000800209d8                cursor_row
+ .scommon       0x00000000800209dc        0x4 kernel/fs/fat/vfs.o
+                0x00000000800209dc                root
+ .scommon       0x00000000800209e0        0x8 kernel/mm/bootmm.o
+                0x00000000800209e0                firstusercode_start
+                0x00000000800209e4                firstusercode_len
+ .scommon       0x00000000800209e8        0xc kernel/mm/buddy.o
+                0x00000000800209e8                kernel_start_pfn
+                0x00000000800209ec                kernel_end_pfn
+                0x00000000800209f0                pages
+ .scommon       0x00000000800209f4       0x1c usr/myvi.o
+                0x00000000800209f4                cursor_location
+                0x00000000800209f8                is_new_file
+                0x00000000800209fc                page_end
+                0x0000000080020a00                filename
+                0x0000000080020a04                mode
+                0x0000000080020a08                err
+                0x0000000080020a0c                pre_cursor_freq
+ .scommon       0x0000000080020a10        0x4 usr/ps.o
+                0x0000000080020a10                ps_buffer_index
+                0x0000000080020a14                __sbss_end = .
+                0x0000000080020a14                ___sbss_end = .
+
+.bss            0x0000000080020a14    0x3e1b8
+ *(.dynbss)
+ *(.bss)
+ .bss           0x0000000080020a14        0x0 arch/mips32/start.o
+ .bss           0x0000000080020a14        0x0 arch/mips32/arch.o
+ .bss           0x0000000080020a14        0x0 arch/mips32/exc.o
+ .bss           0x0000000080020a14        0x0 arch/mips32/intr.o
+ .bss           0x0000000080020a14        0x0 arch/mips32/page.o
+ .bss           0x0000000080020a14      0x100 kernel/driver/ps2.o
+ .bss           0x0000000080020b14        0x0 kernel/driver/sd.o
+ .bss           0x0000000080020b14        0x0 kernel/driver/vga.o
+ .bss           0x0000000080020b14        0x0 kernel/driver/vga_graphics.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/debug.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/dir.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/fat.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/file.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/usr.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/utils.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fat/vfs.o
+ .bss           0x0000000080020b14        0x0 kernel/fs/fscache/fscache.o
+ .bss           0x0000000080020b14        0x0 kernel/init.o
+ .bss           0x0000000080020b14        0x0 kernel/lock/lock.o
+ .bss           0x0000000080020b14        0x0 kernel/mm/bootmm.o
+ .bss           0x0000000080020b14        0x0 kernel/mm/buddy.o
+ .bss           0x0000000080020b14        0x0 kernel/mm/mmu.o
+ .bss           0x0000000080020b14        0x0 kernel/mm/slab.o
+ .bss           0x0000000080020b14     0x1000 kernel/pc/pc.o
+ .bss           0x0000000080021b14       0xac kernel/schedule/sched.o
+ .bss           0x0000000080021bc0      0x2b4 kernel/syncronization/diningphilosophers.o
+ .bss           0x0000000080021e74        0x0 kernel/syncronization/semaphore.o
+ .bss           0x0000000080021e74       0xe0 kernel/syncronization/truesemtest.o
+ .bss           0x0000000080021f54        0x0 kernel/syscall/syscall.o
+ .bss           0x0000000080021f54        0x0 kernel/syscall/syscall4.o
+ .bss           0x0000000080021f54        0x0 kernel/syscall/usr_syscalls.o
+ .bss           0x0000000080021f54        0x0 kernel/time/time.o
+ .bss           0x0000000080021f54        0x0 utils/assert.o
+ .bss           0x0000000080021f54        0x0 utils/log.o
+ .bss           0x0000000080021f54        0x0 utils/utils.o
+ .bss           0x0000000080021f54      0x200 usr/exec.o
+ .bss           0x0000000080022154        0x0 usr/ls.o
+ .bss           0x0000000080022154       0x50 usr/myvi.o
+                0x0000000080022154                instruction
+ .bss           0x00000000800221a4     0x2000 usr/ps.o
+ .bss           0x00000000800241a4        0x0 usr/showimg.o
+ .bss           0x00000000800241a4        0x0 usr/test.o
+ *(.bss.*)
+ *(COMMON)
+ COMMON         0x00000000800241a4       0x80 arch/mips32/exc.o
+                0x00000000800241a4                exceptions
+ COMMON         0x0000000080024224       0x20 arch/mips32/intr.o
+                0x0000000080024224                interrupts
+ COMMON         0x0000000080024244        0xc kernel/driver/vga.o
+                0x0000000080024244                kernel_printf_lock
+ COMMON         0x0000000080024250     0x4150 kernel/fs/fat/dir.o
+                0x0000000080024250                dir_find
+ COMMON         0x00000000800283a0     0x2058 kernel/fs/fat/fat.o
+                0x00000000800283a0                dir_data_buf
+                0x0000000080028bc0                fat_info
+                0x0000000080028fd8                filename11
+                0x0000000080028fe8                new_alloc_empty
+                0x0000000080029fe8                fat_buf
+ COMMON         0x000000008002a3f8       0x28 kernel/fs/fat/file.o
+                0x000000008002a3f8                Filetable
+ COMMON         0x000000008002a420     0x4170 kernel/fs/fat/usr.o
+                0x000000008002a420                file_create
+                0x000000008002e570                mk_dir_buf
+ COMMON         0x000000008002e590     0xa054 kernel/fs/fscache/fscache.o
+                0x000000008002e590                PAGE_BUFFER
+ COMMON         0x00000000800385e4    0x20090 kernel/mm/bootmm.o
+                0x00000000800385e4                bootmmmap
+                0x00000000800585e4                bmm
+ COMMON         0x0000000080058674       0x9c kernel/mm/buddy.o
+                0x0000000080058674                buddy
+ COMMON         0x0000000080058710      0x400 kernel/mm/mmu.o
+                0x0000000080058710                PGT_BaseAddrs
+ COMMON         0x0000000080058b10      0x1ec kernel/mm/slab.o
+                0x0000000080058b10                slab_lock
+                0x0000000080058b1c                kmalloc_caches
+ COMMON         0x0000000080058cfc      0xd40 kernel/pc/pc.o
+                0x0000000080058cfc                pcb
+ COMMON         0x0000000080059a3c     0x4150 usr/exec.o
+                0x0000000080059a3c                file
+ COMMON         0x000000008005db8c     0x1000 usr/myvi.o
+                0x000000008005db8c                buffer
+ COMMON         0x000000008005eb8c       0x40 usr/ps.o
+                0x000000008005eb8c                ps_buffer
+                0x000000008005ebcc                . = ALIGN (0x4)
+                0x000000008005ebcc                . = ALIGN (0x4)
+                0x000000008005ebcc                _end = .
+                0x000000008005ebcc                PROVIDE (__end, .)
+                0x000000008005ebcc                PROVIDE (end, .)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000       0x44
+ *(.comment)
+ .comment       0x0000000000000000       0x44 arch/mips32/arch.o
+                                         0x45 (size before relaxing)
+ .comment       0x0000000000000044       0x45 arch/mips32/exc.o
+ .comment       0x0000000000000044       0x45 arch/mips32/intr.o
+ .comment       0x0000000000000044       0x45 arch/mips32/page.o
+ .comment       0x0000000000000044       0x45 kernel/driver/ps2.o
+ .comment       0x0000000000000044       0x45 kernel/driver/sd.o
+ .comment       0x0000000000000044       0x45 kernel/driver/vga.o
+ .comment       0x0000000000000044       0x45 kernel/driver/vga_graphics.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/debug.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/dir.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/fat.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/file.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/usr.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/utils.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fat/vfs.o
+ .comment       0x0000000000000044       0x45 kernel/fs/fscache/fscache.o
+ .comment       0x0000000000000044       0x45 kernel/init.o
+ .comment       0x0000000000000044       0x45 kernel/lock/lock.o
+ .comment       0x0000000000000044       0x45 kernel/mm/bootmm.o
+ .comment       0x0000000000000044       0x45 kernel/mm/buddy.o
+ .comment       0x0000000000000044       0x45 kernel/mm/mmu.o
+ .comment       0x0000000000000044       0x45 kernel/mm/slab.o
+ .comment       0x0000000000000044       0x45 kernel/pc/pc.o
+ .comment       0x0000000000000044       0x45 kernel/schedule/sched.o
+ .comment       0x0000000000000044       0x45 kernel/syncronization/diningphilosophers.o
+ .comment       0x0000000000000044       0x45 kernel/syncronization/semaphore.o
+ .comment       0x0000000000000044       0x45 kernel/syncronization/truesemtest.o
+ .comment       0x0000000000000044       0x45 kernel/syscall/syscall.o
+ .comment       0x0000000000000044       0x45 kernel/syscall/syscall4.o
+ .comment       0x0000000000000044       0x45 kernel/syscall/usr_syscalls.o
+ .comment       0x0000000000000044       0x45 kernel/time/time.o
+ .comment       0x0000000000000044       0x45 utils/assert.o
+ .comment       0x0000000000000044       0x45 utils/log.o
+ .comment       0x0000000000000044       0x45 utils/utils.o
+ .comment       0x0000000000000044       0x45 usr/exec.o
+ .comment       0x0000000000000044       0x45 usr/ls.o
+ .comment       0x0000000000000044       0x45 usr/myvi.o
+ .comment       0x0000000000000044       0x45 usr/ps.o
+ .comment       0x0000000000000044       0x45 usr/showimg.o
+ .comment       0x0000000000000044       0x45 usr/test.o
+
+.gnu.attributes
+                0x0000000000000000       0x10
+ .gnu.attributes
+                0x0000000000000000       0x10 arch/mips32/start.o
+ .gnu.attributes
+                0x0000000000000010       0x10 arch/mips32/arch.o
+ .gnu.attributes
+                0x0000000000000020       0x10 arch/mips32/exc.o
+ .gnu.attributes
+                0x0000000000000030       0x10 arch/mips32/intr.o
+ .gnu.attributes
+                0x0000000000000040       0x10 arch/mips32/page.o
+ .gnu.attributes
+                0x0000000000000050       0x10 kernel/driver/ps2.o
+ .gnu.attributes
+                0x0000000000000060       0x10 kernel/driver/sd.o
+ .gnu.attributes
+                0x0000000000000070       0x10 kernel/driver/vga.o
+ .gnu.attributes
+                0x0000000000000080       0x10 kernel/driver/vga_graphics.o
+ .gnu.attributes
+                0x0000000000000090       0x10 kernel/fs/fat/debug.o
+ .gnu.attributes
+                0x00000000000000a0       0x10 kernel/fs/fat/dir.o
+ .gnu.attributes
+                0x00000000000000b0       0x10 kernel/fs/fat/fat.o
+ .gnu.attributes
+                0x00000000000000c0       0x10 kernel/fs/fat/file.o
+ .gnu.attributes
+                0x00000000000000d0       0x10 kernel/fs/fat/usr.o
+ .gnu.attributes
+                0x00000000000000e0       0x10 kernel/fs/fat/utils.o
+ .gnu.attributes
+                0x00000000000000f0       0x10 kernel/fs/fat/vfs.o
+ .gnu.attributes
+                0x0000000000000100       0x10 kernel/fs/fscache/fscache.o
+ .gnu.attributes
+                0x0000000000000110       0x10 kernel/init.o
+ .gnu.attributes
+                0x0000000000000120       0x10 kernel/lock/lock.o
+ .gnu.attributes
+                0x0000000000000130       0x10 kernel/mm/bootmm.o
+ .gnu.attributes
+                0x0000000000000140       0x10 kernel/mm/buddy.o
+ .gnu.attributes
+                0x0000000000000150       0x10 kernel/mm/mmu.o
+ .gnu.attributes
+                0x0000000000000160       0x10 kernel/mm/slab.o
+ .gnu.attributes
+                0x0000000000000170       0x10 kernel/pc/pc.o
+ .gnu.attributes
+                0x0000000000000180       0x10 kernel/schedule/sched.o
+ .gnu.attributes
+                0x0000000000000190       0x10 kernel/syncronization/diningphilosophers.o
+ .gnu.attributes
+                0x00000000000001a0       0x10 kernel/syncronization/semaphore.o
+ .gnu.attributes
+                0x00000000000001b0       0x10 kernel/syncronization/truesemtest.o
+ .gnu.attributes
+                0x00000000000001c0       0x10 kernel/syscall/syscall.o
+ .gnu.attributes
+                0x00000000000001d0       0x10 kernel/syscall/syscall4.o
+ .gnu.attributes
+                0x00000000000001e0       0x10 kernel/syscall/usr_syscalls.o
+ .gnu.attributes
+                0x00000000000001f0       0x10 kernel/time/time.o
+ .gnu.attributes
+                0x0000000000000200       0x10 utils/assert.o
+ .gnu.attributes
+                0x0000000000000210       0x10 utils/log.o
+ .gnu.attributes
+                0x0000000000000220       0x10 utils/utils.o
+ .gnu.attributes
+                0x0000000000000230       0x10 usr/exec.o
+ .gnu.attributes
+                0x0000000000000240       0x10 usr/ls.o
+ .gnu.attributes
+                0x0000000000000250       0x10 usr/myvi.o
+ .gnu.attributes
+                0x0000000000000260       0x10 usr/ps.o
+ .gnu.attributes
+                0x0000000000000270       0x10 usr/showimg.o
+ .gnu.attributes
+                0x0000000000000280       0x10 usr/test.o
+
+.mdebug.abi32   0x0000000000000000        0x0
+ .mdebug.abi32  0x0000000000000000        0x0 arch/mips32/arch.o
+ .mdebug.abi32  0x0000000000000000        0x0 arch/mips32/exc.o
+ .mdebug.abi32  0x0000000000000000        0x0 arch/mips32/intr.o
+ .mdebug.abi32  0x0000000000000000        0x0 arch/mips32/page.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/driver/ps2.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/driver/sd.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/driver/vga.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/driver/vga_graphics.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/debug.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/dir.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/fat.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/file.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/usr.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/utils.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fat/vfs.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/fs/fscache/fscache.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/init.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/lock/lock.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/mm/bootmm.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/mm/buddy.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/mm/mmu.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/mm/slab.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/pc/pc.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/schedule/sched.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syncronization/diningphilosophers.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syncronization/semaphore.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syncronization/truesemtest.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syscall/syscall.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syscall/syscall4.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/syscall/usr_syscalls.o
+ .mdebug.abi32  0x0000000000000000        0x0 kernel/time/time.o
+ .mdebug.abi32  0x0000000000000000        0x0 utils/assert.o
+ .mdebug.abi32  0x0000000000000000        0x0 utils/log.o
+ .mdebug.abi32  0x0000000000000000        0x0 utils/utils.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/exec.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/ls.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/myvi.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/ps.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/showimg.o
+ .mdebug.abi32  0x0000000000000000        0x0 usr/test.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+/DISCARD/
+ *(.reginfo)
+
+.gptab.sdata
+ *(.gptab.data)
+ *(.gptab.sdata)
+
+.gptab.sbss
+ *(.gptab.bss)
+ *(.gptab.sbss)
+
+.pdr            0x0000000000000000     0x2be0
+ *(.pdr)
+ .pdr           0x0000000000000000        0x0 arch/mips32/start.o
+ .pdr           0x0000000000000000       0x20 arch/mips32/arch.o
+ .pdr           0x0000000000000020       0xa0 arch/mips32/exc.o
+ .pdr           0x00000000000000c0       0xa0 arch/mips32/intr.o
+ .pdr           0x0000000000000160       0x20 arch/mips32/page.o
+ .pdr           0x0000000000000180       0xe0 kernel/driver/ps2.o
+ .pdr           0x0000000000000260       0xa0 kernel/driver/sd.o
+ .pdr           0x0000000000000300      0x160 kernel/driver/vga.o
+ .pdr           0x0000000000000460      0x180 kernel/driver/vga_graphics.o
+ .pdr           0x00000000000005e0       0x40 kernel/fs/fat/debug.o
+ .pdr           0x0000000000000620       0x40 kernel/fs/fat/dir.o
+ .pdr           0x0000000000000660      0x5e0 kernel/fs/fat/fat.o
+ .pdr           0x0000000000000c40       0xc0 kernel/fs/fat/file.o
+ .pdr           0x0000000000000d00       0xa0 kernel/fs/fat/usr.o
+ .pdr           0x0000000000000da0      0x240 kernel/fs/fat/utils.o
+ .pdr           0x0000000000000fe0      0x320 kernel/fs/fat/vfs.o
+ .pdr           0x0000000000001300      0x140 kernel/fs/fscache/fscache.o
+ .pdr           0x0000000000001440       0x80 kernel/init.o
+ .pdr           0x00000000000014c0       0x80 kernel/lock/lock.o
+ .pdr           0x0000000000001540      0x1a0 kernel/mm/bootmm.o
+ .pdr           0x00000000000016e0      0x1c0 kernel/mm/buddy.o
+ .pdr           0x00000000000018a0      0x260 kernel/mm/mmu.o
+ .pdr           0x0000000000001b00      0x2a0 kernel/mm/slab.o
+ .pdr           0x0000000000001da0      0x260 kernel/pc/pc.o
+ .pdr           0x0000000000002000      0x160 kernel/schedule/sched.o
+ .pdr           0x0000000000002160       0xe0 kernel/syncronization/diningphilosophers.o
+ .pdr           0x0000000000002240      0x160 kernel/syncronization/semaphore.o
+ .pdr           0x00000000000023a0       0xc0 kernel/syncronization/truesemtest.o
+ .pdr           0x0000000000002460       0x40 kernel/syscall/syscall.o
+ .pdr           0x00000000000024a0       0x20 kernel/syscall/syscall4.o
+ .pdr           0x00000000000024c0       0x40 kernel/syscall/usr_syscalls.o
+ .pdr           0x0000000000002500       0x60 kernel/time/time.o
+ .pdr           0x0000000000002560       0x20 utils/assert.o
+ .pdr           0x0000000000002580       0xa0 utils/log.o
+ .pdr           0x0000000000002620      0x160 utils/utils.o
+ .pdr           0x0000000000002780       0x20 usr/exec.o
+ .pdr           0x00000000000027a0       0xa0 usr/ls.o
+ .pdr           0x0000000000002840      0x240 usr/myvi.o
+ .pdr           0x0000000000002a80       0x80 usr/ps.o
+ .pdr           0x0000000000002b00       0x80 usr/showimg.o
+ .pdr           0x0000000000002b80       0x60 usr/test.o
+LOAD arch/mips32/start.o
+LOAD arch/mips32/arch.o
+LOAD arch/mips32/exc.o
+LOAD arch/mips32/intr.o
+LOAD arch/mips32/page.o
+LOAD kernel/driver/ps2.o
+LOAD kernel/driver/sd.o
+LOAD kernel/driver/vga.o
+LOAD kernel/driver/vga_graphics.o
+LOAD kernel/fs/fat/debug.o
+LOAD kernel/fs/fat/dir.o
+LOAD kernel/fs/fat/fat.o
+LOAD kernel/fs/fat/file.o
+LOAD kernel/fs/fat/usr.o
+LOAD kernel/fs/fat/utils.o
+LOAD kernel/fs/fat/vfs.o
+LOAD kernel/fs/fscache/fscache.o
+LOAD kernel/init.o
+LOAD kernel/lock/lock.o
+LOAD kernel/mm/bootmm.o
+LOAD kernel/mm/buddy.o
+LOAD kernel/mm/mmu.o
+LOAD kernel/mm/slab.o
+LOAD kernel/pc/pc.o
+LOAD kernel/schedule/sched.o
+LOAD kernel/syncronization/diningphilosophers.o
+LOAD kernel/syncronization/semaphore.o
+LOAD kernel/syncronization/truesemtest.o
+LOAD kernel/syscall/syscall.o
+LOAD kernel/syscall/syscall4.o
+LOAD kernel/syscall/usr_syscalls.o
+LOAD kernel/time/time.o
+LOAD utils/assert.o
+LOAD utils/log.o
+LOAD utils/utils.o
+LOAD usr/exec.o
+LOAD usr/ls.o
+LOAD usr/myvi.o
+LOAD usr/ps.o
+LOAD usr/showimg.o
+LOAD usr/test.o
+OUTPUT(kernel.elf elf32-tradlittlemips)
